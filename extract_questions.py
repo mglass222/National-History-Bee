@@ -8,9 +8,20 @@ import re
 from pathlib import Path
 import fitz  # PyMuPDF
 
-def is_finals_pdf(filename):
-    """Check if PDF is a finals document based on filename."""
-    return 'finals' in filename.lower()
+def get_difficulty_level(filename):
+    """Determine difficulty level based on filename."""
+    filename_lower = filename.lower()
+
+    if 'championship' in filename_lower:
+        return 'championship'
+    elif 'semifinal' in filename_lower:
+        return 'semifinal'
+    elif 'quarterfinal' in filename_lower:
+        return 'quarterfinal'
+    elif 'finals' in filename_lower:
+        return 'finals'
+    else:
+        return 'preliminary'
 
 def get_text_with_formatting(page):
     """Extract text from page with formatting information (bold, italic, underline)."""
@@ -135,8 +146,14 @@ def main():
     pdf_dir = Path('/Users/matthew/Documents/Code/Python/IAC Website/NatHistBee')
     pdf_files = sorted(pdf_dir.glob('*.pdf'))
 
-    preliminary_questions = []
-    finals_questions = []
+    # Initialize question categories
+    questions_by_difficulty = {
+        'preliminary': [],
+        'quarterfinal': [],
+        'semifinal': [],
+        'finals': [],
+        'championship': []
+    }
 
     print(f"Found {len(pdf_files)} PDF files\n")
 
@@ -154,22 +171,25 @@ def main():
         # Extract questions
         questions = extract_questions_from_text(cleaned_text)
 
-        # Categorize by finals or preliminary
-        if is_finals_pdf(pdf_file.name):
-            finals_questions.extend(questions)
-        else:
-            preliminary_questions.extend(questions)
+        # Categorize by difficulty level
+        difficulty = get_difficulty_level(pdf_file.name)
+        questions_by_difficulty[difficulty].extend(questions)
 
-        print(f"  Extracted {len(questions)} questions")
+        print(f"  Extracted {len(questions)} questions ({difficulty})")
+
+    # Calculate totals
+    total_questions = sum(len(q) for q in questions_by_difficulty.values())
 
     # Save to JSON
     output = {
-        'preliminary': preliminary_questions,
-        'finals': finals_questions,
+        **questions_by_difficulty,
         'metadata': {
-            'total_preliminary': len(preliminary_questions),
-            'total_finals': len(finals_questions),
-            'total': len(preliminary_questions) + len(finals_questions)
+            'total_preliminary': len(questions_by_difficulty['preliminary']),
+            'total_quarterfinal': len(questions_by_difficulty['quarterfinal']),
+            'total_semifinal': len(questions_by_difficulty['semifinal']),
+            'total_finals': len(questions_by_difficulty['finals']),
+            'total_championship': len(questions_by_difficulty['championship']),
+            'total': total_questions
         }
     }
 
@@ -178,9 +198,14 @@ def main():
         json.dump(output, f, indent=2, ensure_ascii=False)
 
     print(f"\n{'='*50}")
-    print(f"Total preliminary questions: {len(preliminary_questions)}")
-    print(f"Total finals questions: {len(finals_questions)}")
-    print(f"Grand total: {len(preliminary_questions) + len(finals_questions)}")
+    print(f"Questions by difficulty level:")
+    print(f"  Preliminary:    {len(questions_by_difficulty['preliminary']):,}")
+    print(f"  Quarterfinal:   {len(questions_by_difficulty['quarterfinal']):,}")
+    print(f"  Semifinal:      {len(questions_by_difficulty['semifinal']):,}")
+    print(f"  Finals:         {len(questions_by_difficulty['finals']):,}")
+    print(f"  Championship:   {len(questions_by_difficulty['championship']):,}")
+    print(f"{'='*50}")
+    print(f"Grand total: {total_questions:,}")
     print(f"{'='*50}")
     print(f"\nSaved to {output_file}")
 

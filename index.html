@@ -353,10 +353,13 @@
 
         <div class="controls">
             <div class="control-group">
-                <label for="category">Question Category:</label>
+                <label for="category">Difficulty Level:</label>
                 <select id="category">
-                    <option value="preliminary">Preliminary Questions</option>
-                    <option value="finals">Finals Questions</option>
+                    <option value="preliminary">Preliminary (9,652 questions)</option>
+                    <option value="quarterfinal">Quarterfinals (196 questions)</option>
+                    <option value="semifinal">Semifinals (365 questions)</option>
+                    <option value="finals">Finals (1,764 questions)</option>
+                    <option value="championship">National Championships (85 questions)</option>
                 </select>
             </div>
 
@@ -398,7 +401,13 @@
     </div>
 
     <script>
-        let questions = { preliminary: [], finals: [] };
+        let questions = {
+            preliminary: [],
+            quarterfinal: [],
+            semifinal: [],
+            finals: [],
+            championship: []
+        };
         let currentQuestion = null;
         let streamingInterval = null;
         let isPaused = false;
@@ -421,8 +430,15 @@
         function updateStats() {
             const category = document.getElementById('category').value;
             const count = questions[category]?.length || 0;
+            const categoryNames = {
+                'preliminary': 'preliminary',
+                'quarterfinal': 'quarterfinal',
+                'semifinal': 'semifinal',
+                'finals': 'finals',
+                'championship': 'championship'
+            };
             document.getElementById('stats').textContent =
-                `${count.toLocaleString()} ${category} questions available`;
+                `${count.toLocaleString()} ${categoryNames[category]} questions available`;
         }
 
         function getSpeedLabel(speed) {
