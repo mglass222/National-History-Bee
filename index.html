@@ -560,7 +560,7 @@
             <!-- Reading Speed -->
             <div class="setting-group">
                 <label for="speed">Reading Speed</label>
-                <input type="range" id="speed" min="10" max="200" value="50" step="10">
+                <input type="range" id="speed" min="10" max="100" value="50" step="10">
                 <div class="speed-display">
                     <span id="speedLabel">Medium</span> (<span id="speedValue">50</span> ms/char)
                 </div>
@@ -666,10 +666,10 @@
         }
 
         function getSpeedLabel(speed) {
-            if (speed <= 30) return 'Very Fast';
-            if (speed <= 50) return 'Fast';
-            if (speed <= 80) return 'Medium';
-            if (speed <= 120) return 'Slow';
+            if (speed <= 25) return 'Very Fast';
+            if (speed <= 40) return 'Fast';
+            if (speed <= 60) return 'Medium';
+            if (speed <= 80) return 'Slow';
             return 'Very Slow';
         }
 
