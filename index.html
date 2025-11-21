@@ -144,18 +144,52 @@
             position: relative;
         }
 
-        .question-number {
-            color: #667eea;
-            font-weight: 700;
-            font-size: 1.2em;
-            margin-bottom: 15px;
-        }
-
         .question-text {
             font-size: 1.15em;
             line-height: 1.8;
             color: #333;
             margin-bottom: 25px;
+        }
+
+        .answer-input-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+
+        .answer-input-section label {
+            display: block;
+            margin-bottom: 10px;
+            color: #667eea;
+            font-size: 1em;
+        }
+
+        .answer-input-section input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .answer-input-section input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .answer-input-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .answer-input-buttons button {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.9em;
         }
 
         .answer-section {
@@ -194,6 +228,14 @@
             color: #666;
         }
 
+        .hint {
+            text-align: center;
+            color: #999;
+            font-size: 0.85em;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
         .hidden {
             display: none;
         }
@@ -211,6 +253,78 @@
             50% {
                 opacity: 0;
             }
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            animation: slideIn 0.3s;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-content p {
+            margin-bottom: 25px;
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-buttons button {
+            padding: 12px 30px;
+            font-size: 1em;
+        }
+
+        .correct {
+            color: #4caf50;
+        }
+
+        .incorrect {
+            color: #f44336;
         }
 
         @media (max-width: 768px) {
@@ -265,8 +379,21 @@
             </div>
         </div>
 
+        <div class="hint hidden" id="spacebarHint">
+            💡 Press <strong>SPACE</strong> to pause and answer
+        </div>
+
         <div class="stats">
             <span id="stats">Loading questions...</span>
+        </div>
+    </div>
+
+    <!-- Modal for feedback -->
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Result</h2>
+            <p id="modalMessage"></p>
+            <div class="modal-buttons" id="modalButtons"></div>
         </div>
     </div>
 
@@ -277,6 +404,7 @@
         let isPaused = false;
         let currentCharIndex = 0;
         let currentSection = 'question'; // 'question' or 'answer'
+        let answerInputShown = false;
 
         // Load questions from JSON
         async function loadQuestions() {
@@ -333,12 +461,7 @@
         // Stream text character by character
         function streamText(text, targetElement, callback) {
             const speed = parseInt(document.getElementById('speed').value);
-            const cleanText = text.replace(/<[^>]*>/g, ''); // For measuring length
             let displayText = '';
-            let tagStack = [];
-            let inTag = false;
-            let tagBuffer = '';
-
             currentCharIndex = 0;
 
             function addNextChar() {
@@ -355,24 +478,20 @@
 
                 // Handle HTML tags
                 if (char === '<') {
-                    inTag = true;
-                    tagBuffer = '<';
-                } else if (char === '>') {
-                    inTag = false;
-                    tagBuffer += '>';
-
-                    // Add complete tag to display
-                    displayText += tagBuffer;
-                    tagBuffer = '';
-                } else if (inTag) {
-                    tagBuffer += char;
+                    let tagEnd = text.indexOf('>', currentCharIndex);
+                    if (tagEnd !== -1) {
+                        displayText += text.substring(currentCharIndex, tagEnd + 1);
+                        currentCharIndex = tagEnd + 1;
+                    } else {
+                        displayText += char;
+                        currentCharIndex++;
+                    }
                 } else {
-                    // Regular character
                     displayText += char;
+                    currentCharIndex++;
                 }
 
                 targetElement.innerHTML = displayText + '<span class="cursor"></span>';
-                currentCharIndex++;
             }
 
             streamingInterval = setInterval(addNextChar, speed);
@@ -389,7 +508,6 @@
 
             const container = document.querySelector('.question-container');
             container.innerHTML = `
-                <div class="question-number">Question #${currentQuestion.number}</div>
                 <div class="question-text" id="questionText"></div>
                 <div class="answer-section hidden" id="answerSection">
                     <div class="answer-label">ANSWER:</div>
@@ -399,8 +517,10 @@
 
             document.getElementById('pauseButton').classList.remove('hidden');
             document.getElementById('showAnswer').classList.add('hidden');
+            document.getElementById('spacebarHint').classList.remove('hidden');
             currentSection = 'question';
             isPaused = false;
+            answerInputShown = false;
 
             // Stream the question text
             streamText(
@@ -414,12 +534,187 @@
             );
         }
 
+        // Show answer input
+        function showAnswerInput() {
+            if (answerInputShown) return;
+
+            answerInputShown = true;
+            isPaused = true;
+            clearInterval(streamingInterval);
+
+            const questionText = document.getElementById('questionText');
+            questionText.innerHTML = questionText.innerHTML.replace('<span class="cursor"></span>', '');
+
+            const container = document.querySelector('.question-container');
+            const inputSection = document.createElement('div');
+            inputSection.className = 'answer-input-section';
+            inputSection.id = 'answerInputSection';
+            inputSection.innerHTML = `
+                <label>Your Answer:</label>
+                <input type="text" id="userAnswer" placeholder="Type your answer here..." autofocus>
+                <div class="answer-input-buttons">
+                    <button class="btn-primary" onclick="checkAnswer()">Submit Answer</button>
+                    <button class="btn-secondary" onclick="resumeQuestion()">Resume Question</button>
+                </div>
+            `;
+
+            container.appendChild(inputSection);
+            document.getElementById('userAnswer').focus();
+
+            // Allow Enter key to submit
+            document.getElementById('userAnswer').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkAnswer();
+                }
+            });
+        }
+
+        // Normalize answer for comparison
+        function normalizeAnswer(answer) {
+            // Remove HTML tags
+            let normalized = answer.replace(/<[^>]*>/g, '');
+            // Extract main answer (before "accept" or parentheses)
+            normalized = normalized.split(/\(|accept/i)[0];
+            // Remove common words and punctuation
+            normalized = normalized.toLowerCase()
+                .replace(/\b(the|a|an|of|or)\b/g, '')
+                .replace(/[^\w\s]/g, '')
+                .trim()
+                .replace(/\s+/g, ' ');
+            return normalized;
+        }
+
+        // Check if user answer is correct
+        function checkAnswer() {
+            const userAnswer = document.getElementById('userAnswer').value.trim();
+            if (!userAnswer) {
+                alert('Please enter an answer!');
+                return;
+            }
+
+            const correctAnswer = currentQuestion.answer;
+            const normalizedUser = normalizeAnswer(userAnswer);
+            const normalizedCorrect = normalizeAnswer(correctAnswer);
+
+            // Check if user answer is contained in correct answer or vice versa
+            const isCorrect = normalizedCorrect.includes(normalizedUser) ||
+                            normalizedUser.includes(normalizedCorrect) ||
+                            normalizedUser === normalizedCorrect;
+
+            if (isCorrect) {
+                showCorrectModal();
+            } else {
+                showIncorrectModal(correctAnswer);
+            }
+        }
+
+        // Show correct answer modal
+        function showCorrectModal() {
+            const modal = document.getElementById('feedbackModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalButtons = document.getElementById('modalButtons');
+
+            modalTitle.innerHTML = '<span class="correct">🎉 Correct!</span>';
+            modalMessage.textContent = 'Great job! You got it right!';
+            modalButtons.innerHTML = `
+                <button class="btn-primary" onclick="nextQuestionFromModal()">Next Question</button>
+            `;
+
+            modal.style.display = 'block';
+        }
+
+        // Show incorrect answer modal
+        function showIncorrectModal(correctAnswer) {
+            const modal = document.getElementById('feedbackModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalButtons = document.getElementById('modalButtons');
+
+            modalTitle.innerHTML = '<span class="incorrect">❌ Not Quite</span>';
+            modalMessage.innerHTML = `
+                Would you like to try again or see the answer?
+            `;
+            modalButtons.innerHTML = `
+                <button class="btn-primary" onclick="closeModal()">Try Again</button>
+                <button class="btn-success" onclick="revealAnswer()">Show Answer</button>
+            `;
+
+            modal.style.display = 'block';
+        }
+
+        // Resume question after pausing
+        function resumeQuestion() {
+            const inputSection = document.getElementById('answerInputSection');
+            if (inputSection) {
+                inputSection.remove();
+            }
+            answerInputShown = false;
+            isPaused = false;
+
+            // Continue streaming from where we left off
+            const targetElement = document.getElementById('questionText');
+            const text = currentQuestion.question;
+            const speed = parseInt(document.getElementById('speed').value);
+            let displayText = targetElement.innerHTML;
+
+            function addNextChar() {
+                if (isPaused) return;
+
+                if (currentCharIndex >= text.length) {
+                    clearInterval(streamingInterval);
+                    targetElement.innerHTML = displayText;
+                    document.getElementById('showAnswer').classList.remove('hidden');
+                    document.getElementById('pauseButton').classList.add('hidden');
+                    return;
+                }
+
+                const char = text[currentCharIndex];
+
+                // Handle HTML tags
+                if (char === '<') {
+                    let tagEnd = text.indexOf('>', currentCharIndex);
+                    if (tagEnd !== -1) {
+                        displayText += text.substring(currentCharIndex, tagEnd + 1);
+                        currentCharIndex = tagEnd + 1;
+                    } else {
+                        displayText += char;
+                        currentCharIndex++;
+                    }
+                } else {
+                    displayText += char;
+                    currentCharIndex++;
+                }
+
+                targetElement.innerHTML = displayText + '<span class="cursor"></span>';
+            }
+
+            streamingInterval = setInterval(addNextChar, speed);
+        }
+
+        // Reveal the answer
+        function revealAnswer() {
+            closeModal();
+            const inputSection = document.getElementById('answerInputSection');
+            if (inputSection) {
+                inputSection.remove();
+            }
+
+            // Show the complete question first
+            const questionText = document.getElementById('questionText');
+            questionText.innerHTML = currentQuestion.question;
+
+            // Show and stream the answer
+            showAnswer();
+        }
+
         // Show answer
         function showAnswer() {
             const answerSection = document.getElementById('answerSection');
             answerSection.classList.remove('hidden');
             document.getElementById('showAnswer').classList.add('hidden');
-            document.getElementById('pauseButton').classList.remove('hidden');
+            document.getElementById('pauseButton').classList.add('hidden');
+            document.getElementById('spacebarHint').classList.add('hidden');
             currentSection = 'answer';
             isPaused = false;
 
@@ -428,10 +723,21 @@
                 currentQuestion.answer,
                 document.getElementById('answerText'),
                 () => {
-                    // When answer is done, hide pause button
-                    document.getElementById('pauseButton').classList.add('hidden');
+                    // When answer is done, enable next question
                 }
             );
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('feedbackModal').style.display = 'none';
+            document.getElementById('userAnswer')?.focus();
+        }
+
+        // Next question from modal
+        function nextQuestionFromModal() {
+            closeModal();
+            displayQuestion();
         }
 
         // Pause/Resume streaming
@@ -443,33 +749,37 @@
                 button.textContent = 'Resume';
                 button.classList.remove('btn-secondary');
                 button.classList.add('btn-primary');
+                clearInterval(streamingInterval);
             } else {
                 button.textContent = 'Pause';
                 button.classList.remove('btn-primary');
                 button.classList.add('btn-secondary');
-
-                // Resume streaming
-                const targetElement = currentSection === 'question'
-                    ? document.getElementById('questionText')
-                    : document.getElementById('answerText');
-
-                const text = currentSection === 'question'
-                    ? currentQuestion.question
-                    : currentQuestion.answer;
-
-                streamText(text, targetElement, () => {
-                    if (currentSection === 'question') {
-                        document.getElementById('showAnswer').classList.remove('hidden');
-                    }
-                    document.getElementById('pauseButton').classList.add('hidden');
-                });
+                resumeQuestion();
             }
         }
+
+        // Keyboard event for spacebar
+        document.addEventListener('keydown', (e) => {
+            // Only respond to spacebar if a question is active and not in an input field
+            if (e.code === 'Space' && currentQuestion && !answerInputShown &&
+                e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                showAnswerInput();
+            }
+        });
 
         // Event listeners
         document.getElementById('nextQuestion').addEventListener('click', displayQuestion);
         document.getElementById('showAnswer').addEventListener('click', showAnswer);
         document.getElementById('pauseButton').addEventListener('click', togglePause);
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('feedbackModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
 
         // Load questions on page load
         loadQuestions();
