@@ -489,13 +489,24 @@
             return categoryQuestions[randomIndex];
         }
 
-        // Stream text character by character
+        // Stream text character by character with real-time speed control
         function streamText(text, targetElement, callback) {
             let displayText = '';
             currentCharIndex = 0;
+            let lastCharTime = Date.now();
 
             function addNextChar() {
                 if (isPaused) return;
+
+                // Check if enough time has passed based on current speed setting
+                const currentSpeed = parseInt(document.getElementById('speed').value);
+                const now = Date.now();
+
+                if (now - lastCharTime < currentSpeed) {
+                    return; // Not enough time has passed yet
+                }
+
+                lastCharTime = now;
 
                 if (currentCharIndex >= text.length) {
                     clearInterval(streamingInterval);
@@ -524,18 +535,8 @@
                 targetElement.innerHTML = displayText + '<span class="cursor"></span>';
             }
 
-            // Use dynamic speed - read current slider value each interval
-            streamingInterval = setInterval(() => {
-                const currentSpeed = parseInt(document.getElementById('speed').value);
-                clearInterval(streamingInterval);
-                addNextChar();
-                streamingInterval = setInterval(() => {
-                    const speed = parseInt(document.getElementById('speed').value);
-                    clearInterval(streamingInterval);
-                    addNextChar();
-                    streamingInterval = setInterval(addNextChar, speed);
-                }, currentSpeed);
-            }, parseInt(document.getElementById('speed').value));
+            // Check every 10ms, but only add character when enough time has passed
+            streamingInterval = setInterval(addNextChar, 10);
         }
 
         // Display question
@@ -697,9 +698,20 @@
             const targetElement = document.getElementById('questionText');
             const text = currentQuestion.question;
             let displayText = targetElement.innerHTML;
+            let lastCharTime = Date.now();
 
             function addNextChar() {
                 if (isPaused) return;
+
+                // Check if enough time has passed based on current speed setting
+                const currentSpeed = parseInt(document.getElementById('speed').value);
+                const now = Date.now();
+
+                if (now - lastCharTime < currentSpeed) {
+                    return; // Not enough time has passed yet
+                }
+
+                lastCharTime = now;
 
                 if (currentCharIndex >= text.length) {
                     clearInterval(streamingInterval);
@@ -729,18 +741,8 @@
                 targetElement.innerHTML = displayText + '<span class="cursor"></span>';
             }
 
-            // Use dynamic speed
-            streamingInterval = setInterval(() => {
-                const currentSpeed = parseInt(document.getElementById('speed').value);
-                clearInterval(streamingInterval);
-                addNextChar();
-                streamingInterval = setInterval(() => {
-                    const speed = parseInt(document.getElementById('speed').value);
-                    clearInterval(streamingInterval);
-                    addNextChar();
-                    streamingInterval = setInterval(addNextChar, speed);
-                }, currentSpeed);
-            }, parseInt(document.getElementById('speed').value));
+            // Check every 10ms, but only add character when enough time has passed
+            streamingInterval = setInterval(addNextChar, 10);
         }
 
         // Reveal the answer
