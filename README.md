@@ -15,7 +15,7 @@ An interactive web application for practicing National History Bee questions wit
 
 ## Usage
 
-1. Visit the [live site](https://mglass222.github.io/National-History-Bee/)
+1. Visit the [live site](https://mglass222.github.io/HBReader/)
 2. Select your difficulty level (Preliminary through National Championships)
 3. Adjust the reading speed to your preference
 4. Click "Next Question" to start
