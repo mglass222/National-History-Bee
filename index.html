@@ -2108,9 +2108,14 @@
                 currentQuestion.question,
                 questionText,
                 () => {
-                    // When question is done, show the "Show Answer" button
-                    document.getElementById('showAnswer').classList.remove('hidden');
-                    document.getElementById('pauseButton').classList.add('hidden');
+                    // When question is done, automatically show answer input if user hasn't buzzed in
+                    if (!answerInputShown) {
+                        showAnswerInput();
+                    } else {
+                        // User already buzzed in, just show the "Show Answer" button
+                        document.getElementById('showAnswer').classList.remove('hidden');
+                        document.getElementById('pauseButton').classList.add('hidden');
+                    }
                 }
             );
         }
