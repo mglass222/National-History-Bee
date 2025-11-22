@@ -773,6 +773,13 @@
         // Update stats when category changes
         document.getElementById('category').addEventListener('change', updateStats);
 
+        // Helper function to remove all cursor elements from HTML
+        function removeCursor(element) {
+            // Remove cursor using regex to catch all instances
+            const html = element.innerHTML;
+            element.innerHTML = html.replace(/<span class="cursor"><\/span>/g, '');
+        }
+
         // Get random question from current category
         function getRandomQuestion() {
             const category = document.getElementById('category').value;
@@ -788,6 +795,9 @@
 
         // Stream text character by character with real-time speed control
         function streamText(text, targetElement, callback) {
+            // Clean start - remove any existing cursors
+            removeCursor(targetElement);
+
             let displayText = '';
             currentCharIndex = 0;
             let lastCharTime = Date.now();
@@ -890,8 +900,8 @@
             clearInterval(streamingInterval);
 
             const questionText = document.getElementById('questionText');
-            // Remove cursor completely
-            questionText.innerHTML = questionText.innerHTML.replace('<span class="cursor"></span>', '');
+            // Remove all cursor elements
+            removeCursor(questionText);
 
             // Update buzzer visibility
             updateBuzzerVisibility();
@@ -954,9 +964,10 @@
                 inputSection.remove();
             }
 
-            // Clear the streaming interval and remove cursor
+            // Clear the streaming interval and remove all cursors
             clearInterval(streamingInterval);
             const questionText = document.getElementById('questionText');
+            removeCursor(questionText);
             questionText.innerHTML = currentQuestion.question;
 
             // Hide pause/show answer buttons
@@ -1024,6 +1035,9 @@
 
             const targetElement = document.getElementById('questionText');
             const text = currentQuestion.question;
+
+            // Make sure there are no cursor elements before resuming
+            removeCursor(targetElement);
             let displayText = targetElement.innerHTML;
             let lastCharTime = Date.now();
 
@@ -1041,7 +1055,7 @@
 
                 if (currentCharIndex >= text.length) {
                     clearInterval(streamingInterval);
-                    // Remove cursor when done
+                    // Remove cursor when done - just set to displayText without cursor
                     targetElement.innerHTML = displayText;
                     document.getElementById('showAnswer').classList.remove('hidden');
                     document.getElementById('pauseButton').classList.add('hidden');
@@ -1065,6 +1079,7 @@
                     currentCharIndex++;
                 }
 
+                // Always set fresh HTML with cursor at the end
                 targetElement.innerHTML = displayText + '<span class="cursor"></span>';
             }
 
@@ -1081,6 +1096,7 @@
             clearInterval(streamingInterval);
 
             const questionText = document.getElementById('questionText');
+            removeCursor(questionText);
             questionText.innerHTML = currentQuestion.question;
 
             showAnswer();
