@@ -8,7 +8,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, getDocs, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         const firebaseConfig = {
@@ -24,7 +24,7 @@
         const app = initializeApp(firebaseConfig);
         window.firebaseAuth = getAuth(app);
         window.firebaseDb = getFirestore(app);
-        window.firebaseAuthFunctions = { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+        window.firebaseAuthFunctions = { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification };
         window.firebaseDbFunctions = { doc, setDoc, getDoc, collection, query, orderBy, getDocs, deleteDoc };
     </script>
 
@@ -854,6 +854,48 @@
             cursor: not-allowed;
         }
 
+        /* Email Verification Banner */
+        .verification-banner {
+            display: none;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 12px 20px;
+            margin: 20px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        [data-theme="dark"] .verification-banner {
+            background: #3d3519;
+            border-color: #ffc107;
+            color: #ffc107;
+        }
+
+        .verification-banner.show {
+            display: block;
+        }
+
+        .verification-banner strong {
+            font-weight: 600;
+        }
+
+        .verification-banner button {
+            margin-left: 10px;
+            padding: 6px 12px;
+            background: #ffc107;
+            color: #000;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .verification-banner button:hover {
+            background: #e0a800;
+        }
+
         /* Page Containers */
         .practice-container {
             display: none;
@@ -1283,6 +1325,12 @@
         </div>
     </div>
 
+    <!-- Email Verification Banner -->
+    <div id="verificationBanner" class="verification-banner">
+        <strong>Email not verified.</strong> Please check your inbox and click the verification link.
+        <button onclick="resendVerificationEmail()">Resend Email</button>
+    </div>
+
     <!-- Practice Page Container -->
     <div id="practiceContainer" class="practice-container active">
     <!-- Main Layout -->
@@ -1637,9 +1685,14 @@
             }
 
             try {
-                const { createUserWithEmailAndPassword } = window.firebaseAuthFunctions;
-                await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+                const { createUserWithEmailAndPassword, sendEmailVerification } = window.firebaseAuthFunctions;
+                const userCredential = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+
+                // Send verification email
+                await sendEmailVerification(userCredential.user);
+
                 closeAuthModal();
+                alert('Account created! Please check your email for a verification link.');
             } catch (error) {
                 errorDiv.textContent = getAuthErrorMessage(error.code);
                 errorDiv.classList.add('show');
@@ -1677,6 +1730,7 @@
         function updateUserUI(user) {
             const userAuthDiv = document.getElementById('userAuth');
             const navTabs = document.getElementById('navTabs');
+            const verificationBanner = document.getElementById('verificationBanner');
 
             if (user) {
                 currentUser = user;
@@ -1688,6 +1742,14 @@
                 `;
                 // Show navigation tabs when logged in
                 navTabs.classList.add('show');
+
+                // Check email verification status
+                if (!user.emailVerified) {
+                    verificationBanner.classList.add('show');
+                } else {
+                    verificationBanner.classList.remove('show');
+                }
+
                 // Load user's history from Firestore
                 loadUserHistory();
             } else {
@@ -1697,9 +1759,29 @@
                 `;
                 // Hide navigation tabs when logged out
                 navTabs.classList.remove('show');
+                // Hide verification banner
+                verificationBanner.classList.remove('show');
                 // Navigate to practice page
                 if (window.location.hash === '#dashboard') {
                     navigateTo('practice');
+                }
+            }
+        }
+
+        // Resend verification email
+        async function resendVerificationEmail() {
+            if (!currentUser) return;
+
+            try {
+                const { sendEmailVerification } = window.firebaseAuthFunctions;
+                await sendEmailVerification(currentUser);
+                alert('Verification email sent! Please check your inbox.');
+            } catch (error) {
+                console.error('Error sending verification email:', error);
+                if (error.code === 'auth/too-many-requests') {
+                    alert('Too many requests. Please wait a few minutes before trying again.');
+                } else {
+                    alert('Error sending verification email. Please try again later.');
                 }
             }
         }
