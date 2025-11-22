@@ -459,6 +459,37 @@
             line-height: 1.6;
         }
 
+        /* Buzzer Button (Mobile/Tablet only) */
+        .buzzer-button {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--warning-yellow);
+            color: white;
+            font-size: 1.2em;
+            font-weight: 700;
+            border: 4px solid var(--text-primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.2s;
+            text-align: center;
+            line-height: 72px;
+        }
+
+        .buzzer-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .buzzer-button.show {
+            display: block;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .main-layout {
@@ -559,6 +590,15 @@
                 </div>
             </div>
 
+            <!-- Font Size -->
+            <div class="setting-group">
+                <label for="fontSize">Font Size</label>
+                <input type="range" id="fontSize" min="14" max="28" value="18" step="2">
+                <div class="speed-display">
+                    <span id="fontSizeLabel">Medium</span> (<span id="fontSizeValue">18</span>px)
+                </div>
+            </div>
+
             <!-- Theme Toggle -->
             <div class="setting-group">
                 <label>Appearance</label>
@@ -589,6 +629,11 @@
             <div class="modal-buttons" id="modalButtons"></div>
         </div>
     </div>
+
+    <!-- Buzzer Button (Mobile/Tablet) -->
+    <button id="buzzerButton" class="buzzer-button" title="Buzz in to answer">
+        BUZZ
+    </button>
 
     <script>
         let questions = {
@@ -637,6 +682,62 @@
         }
 
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+        // Font Size Management
+        function initFontSize() {
+            const savedFontSize = localStorage.getItem('fontSize') || '18';
+            setFontSize(parseInt(savedFontSize));
+        }
+
+        function setFontSize(size) {
+            localStorage.setItem('fontSize', size);
+            document.getElementById('fontSize').value = size;
+            document.getElementById('fontSizeValue').textContent = size;
+
+            // Update label
+            let label = 'Medium';
+            if (size <= 16) label = 'Small';
+            else if (size <= 20) label = 'Medium';
+            else if (size <= 24) label = 'Large';
+            else label = 'Extra Large';
+            document.getElementById('fontSizeLabel').textContent = label;
+
+            // Apply to question text
+            document.getElementById('questionText').style.fontSize = size + 'px';
+        }
+
+        function getFontSizeLabel(size) {
+            if (size <= 16) return 'Small';
+            if (size <= 20) return 'Medium';
+            if (size <= 24) return 'Large';
+            return 'Extra Large';
+        }
+
+        // Update font size display and apply changes
+        document.getElementById('fontSize').addEventListener('input', (e) => {
+            const size = parseInt(e.target.value);
+            setFontSize(size);
+        });
+
+        // Buzzer Button Management (Mobile/Tablet)
+        function updateBuzzerVisibility() {
+            const buzzer = document.getElementById('buzzerButton');
+            const isMobile = window.innerWidth <= 1024;
+            const isStreaming = currentQuestion && !answerInputShown && currentSection === 'question';
+
+            if (isMobile && isStreaming) {
+                buzzer.classList.add('show');
+            } else {
+                buzzer.classList.remove('show');
+            }
+        }
+
+        document.getElementById('buzzerButton').addEventListener('click', () => {
+            showAnswerInput();
+        });
+
+        // Update buzzer visibility on window resize
+        window.addEventListener('resize', updateBuzzerVisibility);
 
         // Load questions from JSON
         async function loadQuestions() {
@@ -1013,6 +1114,7 @@
 
         // Initialize
         initTheme();
+        initFontSize();
         loadQuestions();
     </script>
 </body>
