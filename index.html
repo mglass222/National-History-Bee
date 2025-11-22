@@ -147,7 +147,8 @@
             margin-bottom: 20px;
         }
 
-        .setting-group label {
+        .setting-group label,
+        .setting-group .setting-header {
             display: block;
             font-size: 0.85em;
             font-weight: 600;
@@ -1407,7 +1408,7 @@
 
             <!-- Theme Toggle -->
             <div class="setting-group">
-                <label>Appearance</label>
+                <div class="setting-header">Appearance</div>
                 <div class="theme-toggle-container" id="themeToggle">
                     <div class="theme-toggle-label">
                         <span class="theme-icon" id="themeIcon">☀️</span>
@@ -1421,7 +1422,7 @@
 
             <!-- Statistics -->
             <div class="setting-group">
-                <label>Statistics</label>
+                <div class="setting-header">Statistics</div>
                 <div class="stats-info" id="stats">0 questions practiced</div>
             </div>
         </div>
@@ -2140,7 +2141,7 @@
             inputSection.className = 'answer-input-section';
             inputSection.id = 'answerInputSection';
             inputSection.innerHTML = `
-                <label>Your Answer</label>
+                <label for="userAnswer">Your Answer</label>
                 <input type="text" id="userAnswer" placeholder="Type your answer here..." autofocus>
                 <div class="answer-input-buttons">
                     <button class="btn-primary" onclick="checkAnswer()">Submit Answer</button>
