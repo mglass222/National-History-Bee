@@ -1807,7 +1807,13 @@
                 await currentUser.reload();
 
                 if (currentUser.emailVerified) {
-                    // Email is verified - update UI to show logged-in state
+                    // Email is verified - save any local history to Firebase
+                    if (questionHistory.length > 0) {
+                        for (const entry of questionHistory) {
+                            await saveHistoryItem(entry);
+                        }
+                    }
+                    // Update UI to show logged-in state
                     updateUserUI(currentUser);
                 } else {
                     // Email is NOT verified - log user out
@@ -2415,8 +2421,8 @@
             questionHistory.push(historyEntry);
             updateHistoryDisplay();
 
-            // Save to Firestore if user is logged in
-            if (currentUser) {
+            // Save to Firestore if user is logged in AND email is verified
+            if (currentUser && currentUser.emailVerified) {
                 await saveHistoryItem(historyEntry);
             }
         }
@@ -2438,7 +2444,7 @@
         }
 
         async function loadUserHistory() {
-            if (!currentUser) return;
+            if (!currentUser || !currentUser.emailVerified) return;
 
             try {
                 const { collection, getDocs, query, orderBy } = window.firebaseDbFunctions;
@@ -2656,8 +2662,18 @@
         }
 
         function refreshDashboard() {
+            const dashboardContainer = document.getElementById('dashboardContainer');
+
             if (questionHistory.length === 0) {
                 showEmptyDashboard();
+                return;
+            }
+
+            // Make sure dashboard structure exists (in case it was replaced by empty state)
+            const overallChart = document.getElementById('overallChart');
+            if (!overallChart) {
+                // Dashboard was destroyed, reload the page to restore structure
+                location.reload();
                 return;
             }
 
@@ -2665,7 +2681,7 @@
 
             // Update overall stats
             const accuracyPercentage = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
-            createRadialChart(document.getElementById('overallChart'), accuracyPercentage);
+            createRadialChart(overallChart, accuracyPercentage);
 
             document.getElementById('correctCount').textContent = stats.correct;
             document.getElementById('incorrectCount').textContent = stats.incorrect;
