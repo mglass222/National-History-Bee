@@ -9,7 +9,7 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, getDocs, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyADQMMGw1DXiUiNPBqnMcJh6iNdSrOZpTE",
@@ -25,7 +25,7 @@
         window.firebaseAuth = getAuth(app);
         window.firebaseDb = getFirestore(app);
         window.firebaseAuthFunctions = { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged };
-        window.firebaseDbFunctions = { doc, setDoc, getDoc, collection, query, orderBy, getDocs };
+        window.firebaseDbFunctions = { doc, setDoc, getDoc, collection, query, orderBy, getDocs, deleteDoc };
     </script>
 
     <style>
@@ -853,19 +853,438 @@
             background: var(--text-tertiary);
             cursor: not-allowed;
         }
+
+        /* Page Containers */
+        .practice-container {
+            display: none;
+        }
+
+        .practice-container.active {
+            display: block;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: none;
+            gap: 20px;
+        }
+
+        .nav-tabs.show {
+            display: flex;
+        }
+
+        .nav-tab {
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        /* Dashboard Styles */
+        .dashboard-container {
+            display: none;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px 40px 20px;
+        }
+
+        .dashboard-container.active {
+            display: block;
+        }
+
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+
+        .dashboard-title {
+            font-size: 2em;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1em;
+            color: var(--text-secondary);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+
+        .dashboard-card:hover {
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .card-header {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Radial Progress Chart */
+        .radial-chart {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .radial-chart.small {
+            width: 120px;
+            height: 120px;
+        }
+
+        .radial-chart svg {
+            transform: rotate(-90deg);
+        }
+
+        .radial-chart-bg {
+            fill: none;
+            stroke: var(--bg-tertiary);
+            stroke-width: 12;
+        }
+
+        .radial-chart-progress {
+            fill: none;
+            stroke: var(--primary-blue);
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .radial-chart-progress.correct {
+            stroke: var(--success-green);
+        }
+
+        .radial-chart-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .radial-chart-percentage {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .radial-chart.small .radial-chart-percentage {
+            font-size: 1.8em;
+        }
+
+        .radial-chart-label {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .stat-value.correct {
+            color: var(--success-green);
+        }
+
+        .stat-value.incorrect {
+            color: var(--error-red);
+        }
+
+        .stat-value.skipped {
+            color: var(--text-tertiary);
+        }
+
+        /* Difficulty Charts Grid */
+        .difficulty-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .difficulty-chart-item {
+            text-align: center;
+        }
+
+        .difficulty-name {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 10px;
+        }
+
+        .difficulty-count {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            margin-top: 3px;
+        }
+
+        /* History Table */
+        .history-table-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .history-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .history-search {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 0.95em;
+        }
+
+        .history-filter {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 0.95em;
+            cursor: pointer;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid var(--border-color);
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .history-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .history-table tr {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .history-table tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .history-table tr.correct {
+            border-left: 3px solid var(--success-green);
+        }
+
+        .history-table tr.incorrect {
+            border-left: 3px solid var(--error-red);
+        }
+
+        .history-table tr.skipped {
+            border-left: 3px solid var(--text-tertiary);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-badge.correct {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-green);
+        }
+
+        .status-badge.incorrect {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--error-red);
+        }
+
+        .status-badge.skipped {
+            background: var(--bg-tertiary);
+            color: var(--text-tertiary);
+        }
+
+        /* Action Buttons */
+        .dashboard-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-export {
+            padding: 10px 20px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-export:hover {
+            background: var(--primary-blue-hover);
+        }
+
+        .btn-clear {
+            padding: 10px 20px;
+            background: var(--error-red);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-clear:hover {
+            background: #c0392b;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .empty-state-message {
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .history-table {
+                font-size: 0.9em;
+            }
+
+            .history-table th,
+            .history-table td {
+                padding: 8px;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
     <div class="header">
         <div class="header-content">
-            <div class="site-title"><span style="color: var(--primary-blue);">HB</span>Reader</div>
+            <div style="display: flex; align-items: center; gap: 30px;">
+                <div class="site-title"><span style="color: var(--primary-blue);">HB</span>Reader</div>
+                <nav class="nav-tabs" id="navTabs">
+                    <button class="nav-tab active" onclick="navigateTo('practice')">Practice</button>
+                    <button class="nav-tab" onclick="navigateTo('dashboard')">Dashboard</button>
+                </nav>
+            </div>
             <div id="userAuth">
                 <button class="btn-login" onclick="showAuthModal()">Login / Sign Up</button>
             </div>
         </div>
     </div>
 
+    <!-- Practice Page Container -->
+    <div id="practiceContainer" class="practice-container active">
     <!-- Main Layout -->
     <div class="main-layout">
         <!-- Play Area (Left Side) -->
@@ -975,6 +1394,102 @@
         <div class="tooltip-question" id="tooltipQuestion"></div>
         <div class="tooltip-label">Answer</div>
         <div class="tooltip-answer" id="tooltipAnswer"></div>
+    </div>
+    </div> <!-- End Practice Container -->
+
+    <!-- Dashboard Container -->
+    <div id="dashboardContainer" class="dashboard-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Dashboard</h1>
+            <p class="dashboard-subtitle">Track your progress and review your question history</p>
+        </div>
+
+        <!-- Overall Statistics -->
+        <div class="dashboard-grid">
+            <!-- Overall Accuracy Card -->
+            <div class="dashboard-card">
+                <div class="card-header">Overall Accuracy</div>
+                <div class="card-body">
+                    <div class="radial-chart" id="overallChart">
+                        <!-- Chart will be generated by JS -->
+                    </div>
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-value correct" id="correctCount">0</div>
+                            <div class="stat-label">Correct</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value incorrect" id="incorrectCount">0</div>
+                            <div class="stat-label">Incorrect</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value skipped" id="skippedCount">0</div>
+                            <div class="stat-label">Skipped</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics Card -->
+            <div class="dashboard-card">
+                <div class="card-header">Performance Metrics</div>
+                <div class="card-body">
+                    <div class="stat-item" style="margin-bottom: 20px;">
+                        <div class="stat-value" id="currentStreak">0</div>
+                        <div class="stat-label">Current Streak</div>
+                    </div>
+                    <div class="stat-item" style="margin-bottom: 20px;">
+                        <div class="stat-value" id="bestStreak">0</div>
+                        <div class="stat-label">Best Streak</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalAttempted">0</div>
+                        <div class="stat-label">Total Attempted</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance by Difficulty -->
+        <div class="dashboard-card">
+            <div class="card-header">Performance by Difficulty</div>
+            <div class="card-body">
+                <div class="difficulty-charts" id="difficultyCharts">
+                    <!-- Difficulty charts will be generated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Question History Table -->
+        <div class="history-table-container">
+            <div class="card-header">Question History</div>
+
+            <div class="history-controls">
+                <input type="text" class="history-search" id="historySearch" placeholder="Search by Question ID...">
+                <select class="history-filter" id="difficultyFilter">
+                    <option value="all">All Difficulties</option>
+                    <option value="P">Preliminary</option>
+                    <option value="Q">Quarterfinals</option>
+                    <option value="S">Semifinals</option>
+                    <option value="F">Finals</option>
+                </select>
+                <select class="history-filter" id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="correct">Correct</option>
+                    <option value="incorrect">Incorrect</option>
+                    <option value="skipped">Skipped</option>
+                </select>
+            </div>
+
+            <div id="historyTableWrapper">
+                <!-- Table will be generated by JS -->
+            </div>
+
+            <div class="dashboard-actions">
+                <button class="btn-export" onclick="exportHistory()">Export History (CSV)</button>
+                <button class="btn-clear" onclick="clearHistory()">Clear All History</button>
+            </div>
+        </div>
     </div>
 
     <!-- Modal for feedback -->
@@ -1161,6 +1676,8 @@
 
         function updateUserUI(user) {
             const userAuthDiv = document.getElementById('userAuth');
+            const navTabs = document.getElementById('navTabs');
+
             if (user) {
                 currentUser = user;
                 userAuthDiv.innerHTML = `
@@ -1169,6 +1686,8 @@
                         <button class="btn-logout" onclick="handleLogout()">Logout</button>
                     </div>
                 `;
+                // Show navigation tabs when logged in
+                navTabs.classList.add('show');
                 // Load user's history from Firestore
                 loadUserHistory();
             } else {
@@ -1176,6 +1695,12 @@
                 userAuthDiv.innerHTML = `
                     <button class="btn-login" onclick="showAuthModal()">Login / Sign Up</button>
                 `;
+                // Hide navigation tabs when logged out
+                navTabs.classList.remove('show');
+                // Navigate to practice page
+                if (window.location.hash === '#dashboard') {
+                    navigateTo('practice');
+                }
             }
         }
 
@@ -1915,7 +2440,361 @@
             tooltip.style.top = top + 'px';
         }
 
+        // Hash-based Routing
+        function navigateTo(page) {
+            window.location.hash = page;
+        }
+
+        function handleRouteChange() {
+            const hash = window.location.hash.slice(1) || 'practice';
+            const practiceContainer = document.getElementById('practiceContainer');
+            const dashboardContainer = document.getElementById('dashboardContainer');
+            const navTabs = document.querySelectorAll('.nav-tab');
+
+            // Update containers
+            if (hash === 'dashboard') {
+                practiceContainer.classList.remove('active');
+                dashboardContainer.classList.add('active');
+                navTabs[0].classList.remove('active');
+                navTabs[1].classList.add('active');
+                refreshDashboard();
+            } else {
+                practiceContainer.classList.add('active');
+                dashboardContainer.classList.remove('active');
+                navTabs[0].classList.add('active');
+                navTabs[1].classList.remove('active');
+            }
+        }
+
+        // Dashboard Functions
+        function createRadialChart(container, percentage, size = 'normal') {
+            const isSmall = size === 'small';
+            const radius = isSmall ? 48 : 88;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (percentage / 100) * circumference;
+
+            container.innerHTML = `
+                <svg width="${isSmall ? 120 : 200}" height="${isSmall ? 120 : 200}">
+                    <circle class="radial-chart-bg" cx="${isSmall ? 60 : 100}" cy="${isSmall ? 60 : 100}" r="${radius}"></circle>
+                    <circle class="radial-chart-progress correct" cx="${isSmall ? 60 : 100}" cy="${isSmall ? 60 : 100}" r="${radius}"
+                            stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>
+                </svg>
+                <div class="radial-chart-text">
+                    <div class="radial-chart-percentage">${percentage}%</div>
+                </div>
+            `;
+        }
+
+        function calculateStats() {
+            const stats = {
+                total: questionHistory.length,
+                correct: 0,
+                incorrect: 0,
+                skipped: 0,
+                currentStreak: 0,
+                bestStreak: 0,
+                byDifficulty: {
+                    P: { total: 0, correct: 0, incorrect: 0, skipped: 0 },
+                    Q: { total: 0, correct: 0, incorrect: 0, skipped: 0 },
+                    S: { total: 0, correct: 0, incorrect: 0, skipped: 0 },
+                    F: { total: 0, correct: 0, incorrect: 0, skipped: 0 }
+                }
+            };
+
+            let currentStreak = 0;
+            let bestStreak = 0;
+
+            questionHistory.forEach((entry) => {
+                // Overall stats
+                if (entry.status === 'correct') {
+                    stats.correct++;
+                    currentStreak++;
+                    bestStreak = Math.max(bestStreak, currentStreak);
+                } else if (entry.status === 'incorrect') {
+                    stats.incorrect++;
+                    currentStreak = 0;
+                } else {
+                    stats.skipped++;
+                }
+
+                // Difficulty stats
+                const difficultyKey = entry.id.charAt(0);
+                if (stats.byDifficulty[difficultyKey]) {
+                    stats.byDifficulty[difficultyKey].total++;
+                    stats.byDifficulty[difficultyKey][entry.status]++;
+                }
+            });
+
+            // Calculate current streak (consecutive correct from end)
+            for (let i = questionHistory.length - 1; i >= 0; i--) {
+                if (questionHistory[i].status === 'correct') {
+                    stats.currentStreak++;
+                } else {
+                    break;
+                }
+            }
+
+            stats.bestStreak = bestStreak;
+
+            return stats;
+        }
+
+        function refreshDashboard() {
+            if (questionHistory.length === 0) {
+                showEmptyDashboard();
+                return;
+            }
+
+            const stats = calculateStats();
+
+            // Update overall stats
+            const accuracyPercentage = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
+            createRadialChart(document.getElementById('overallChart'), accuracyPercentage);
+
+            document.getElementById('correctCount').textContent = stats.correct;
+            document.getElementById('incorrectCount').textContent = stats.incorrect;
+            document.getElementById('skippedCount').textContent = stats.skipped;
+            document.getElementById('currentStreak').textContent = stats.currentStreak;
+            document.getElementById('bestStreak').textContent = stats.bestStreak;
+            document.getElementById('totalAttempted').textContent = stats.total;
+
+            // Update difficulty charts
+            const difficultyCharts = document.getElementById('difficultyCharts');
+            const difficultyNames = { P: 'Preliminary', Q: 'Quarterfinals', S: 'Semifinals', F: 'Finals' };
+
+            difficultyCharts.innerHTML = '';
+            Object.keys(difficultyNames).forEach(key => {
+                const data = stats.byDifficulty[key];
+                const percentage = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
+
+                const chartItem = document.createElement('div');
+                chartItem.className = 'difficulty-chart-item';
+
+                const chartDiv = document.createElement('div');
+                chartDiv.className = 'radial-chart small';
+                createRadialChart(chartDiv, percentage, 'small');
+
+                const name = document.createElement('div');
+                name.className = 'difficulty-name';
+                name.textContent = difficultyNames[key];
+
+                const count = document.createElement('div');
+                count.className = 'difficulty-count';
+                count.textContent = `${data.total} attempted`;
+
+                chartItem.appendChild(chartDiv);
+                chartItem.appendChild(name);
+                chartItem.appendChild(count);
+                difficultyCharts.appendChild(chartItem);
+            });
+
+            // Update history table
+            renderHistoryTable(questionHistory);
+        }
+
+        function showEmptyDashboard() {
+            const dashboardContainer = document.getElementById('dashboardContainer');
+            dashboardContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <h2 class="empty-state-title">No History Yet</h2>
+                    <p class="empty-state-message">
+                        Start practicing questions to see your performance statistics and history here.
+                    </p>
+                    <button class="btn-primary" onclick="navigateTo('practice')" style="margin-top: 20px; padding: 12px 24px;">
+                        Start Practicing
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderHistoryTable(data) {
+            const wrapper = document.getElementById('historyTableWrapper');
+
+            if (data.length === 0) {
+                wrapper.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 40px;">No questions match your filters.</p>';
+                return;
+            }
+
+            let tableHTML = `
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Question ID</th>
+                            <th>Status</th>
+                            <th>Difficulty</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.forEach(entry => {
+                const date = new Date(entry.timestamp).toLocaleDateString();
+                const difficulty = getDifficultyName(entry.id.charAt(0));
+                const statusIcon = entry.status === 'correct' ? '✓' : (entry.status === 'incorrect' ? '✗' : '—');
+
+                tableHTML += `
+                    <tr class="${entry.status}" onclick="openQuestionDetail('${entry.id}')">
+                        <td><strong>${entry.id}</strong></td>
+                        <td>
+                            <span class="status-badge ${entry.status}">
+                                ${statusIcon} ${entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
+                            </span>
+                        </td>
+                        <td>${difficulty}</td>
+                        <td>${date}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table>';
+            wrapper.innerHTML = tableHTML;
+        }
+
+        function getDifficultyName(key) {
+            const names = { P: 'Preliminary', Q: 'Quarterfinals', S: 'Semifinals', F: 'Finals' };
+            return names[key] || 'Unknown';
+        }
+
+        function openQuestionDetail(questionId) {
+            const entry = questionHistory.find(e => e.id === questionId);
+            if (!entry) return;
+
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Question ${questionId}</title>
+                    <style>
+                        body {
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                            max-width: 800px;
+                            margin: 40px auto;
+                            padding: 20px;
+                            line-height: 1.6;
+                        }
+                        h1 { color: #4a90e2; }
+                        .question { font-size: 1.1em; margin: 20px 0; }
+                        .answer { background: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0; }
+                        .label { font-weight: 600; color: #666; margin-bottom: 10px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Question ${questionId}</h1>
+                    <div class="label">Question:</div>
+                    <div class="question">${entry.question}</div>
+                    <div class="label">Answer:</div>
+                    <div class="answer">${entry.answer}</div>
+                </body>
+                </html>
+            `);
+            newWindow.document.close();
+        }
+
+        // History filtering
+        function filterHistory() {
+            const searchTerm = document.getElementById('historySearch').value.toLowerCase();
+            const difficultyFilter = document.getElementById('difficultyFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filtered = questionHistory.filter(entry => {
+                const matchesSearch = entry.id.toLowerCase().includes(searchTerm);
+                const matchesDifficulty = difficultyFilter === 'all' || entry.id.charAt(0) === difficultyFilter;
+                const matchesStatus = statusFilter === 'all' || entry.status === statusFilter;
+
+                return matchesSearch && matchesDifficulty && matchesStatus;
+            });
+
+            renderHistoryTable(filtered);
+        }
+
+        // Export history to CSV
+        function exportHistory() {
+            if (questionHistory.length === 0) {
+                alert('No history to export!');
+                return;
+            }
+
+            let csv = 'Question ID,Status,Difficulty,Date,Question,Answer\n';
+
+            questionHistory.forEach(entry => {
+                const date = new Date(entry.timestamp).toLocaleDateString();
+                const difficulty = getDifficultyName(entry.id.charAt(0));
+                const question = entry.question.replace(/"/g, '""').replace(/<[^>]*>/g, '');
+                const answer = entry.answer.replace(/"/g, '""').replace(/<[^>]*>/g, '');
+
+                csv += `"${entry.id}","${entry.status}","${difficulty}","${date}","${question}","${answer}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `hbreader-history-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Clear all history
+        async function clearHistory() {
+            if (!confirm('Are you sure you want to clear all your question history? This cannot be undone.')) {
+                return;
+            }
+
+            questionHistory = [];
+            updateHistoryDisplay();
+            questionsPracticed = 0;
+            updateStats();
+
+            // Clear from Firestore if logged in
+            if (currentUser) {
+                try {
+                    const { collection, getDocs, deleteDoc, doc } = window.firebaseDbFunctions;
+                    const historyCollectionRef = collection(
+                        window.firebaseDb,
+                        'users',
+                        currentUser.uid,
+                        'history'
+                    );
+                    const querySnapshot = await getDocs(historyCollectionRef);
+
+                    const deletePromises = [];
+                    querySnapshot.forEach((docSnapshot) => {
+                        deletePromises.push(deleteDoc(docSnapshot.ref));
+                    });
+
+                    await Promise.all(deletePromises);
+                    alert('History cleared successfully!');
+                    refreshDashboard();
+                } catch (error) {
+                    console.error('Error clearing history:', error);
+                    alert('Error clearing history from cloud. Please try again.');
+                }
+            } else {
+                alert('History cleared!');
+                refreshDashboard();
+            }
+        }
+
+        // Event listeners for filtering
+        document.addEventListener('DOMContentLoaded', () => {
+            const historySearch = document.getElementById('historySearch');
+            const difficultyFilter = document.getElementById('difficultyFilter');
+            const statusFilter = document.getElementById('statusFilter');
+
+            if (historySearch) historySearch.addEventListener('input', filterHistory);
+            if (difficultyFilter) difficultyFilter.addEventListener('change', filterHistory);
+            if (statusFilter) statusFilter.addEventListener('change', filterHistory);
+        });
+
         // Initialize
+        window.addEventListener('hashchange', handleRouteChange);
+        window.addEventListener('load', () => {
+            handleRouteChange();
+        });
+
         initTheme();
         initFontSize();
         loadQuestions();
