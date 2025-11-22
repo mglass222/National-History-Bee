@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HBReader</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <style>
         :root {
             --bg-primary: #ffffff;
@@ -19,6 +25,7 @@
             --success-green: #27ae60;
             --success-green-hover: #229954;
             --error-red: #e74c3c;
+            --warning-yellow: #f39c12;
             --header-bg: #ffffff;
             --panel-bg: #ffffff;
         }
@@ -37,6 +44,7 @@
             --success-green: #2ecc71;
             --success-green-hover: #27ae60;
             --error-red: #ff6b6b;
+            --warning-yellow: #f1c40f;
             --header-bg: #1f1f1f;
             --panel-bg: #1f1f1f;
         }
@@ -75,6 +83,75 @@
         .site-title {
             font-size: 1.5em;
             font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* User Account Section */
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .login-btn {
+            padding: 8px 20px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .login-btn:hover {
+            background: var(--primary-blue-hover);
+        }
+
+        .logout-btn {
+            padding: 6px 14px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: var(--bg-tertiary);
             color: var(--text-primary);
         }
 
@@ -252,13 +329,18 @@
             background: var(--border-color);
         }
 
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .btn-primary {
             background: var(--primary-blue);
             color: white;
             border-color: var(--primary-blue);
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: var(--primary-blue-hover);
             border-color: var(--primary-blue-hover);
         }
@@ -269,9 +351,22 @@
             border-color: var(--success-green);
         }
 
-        .btn-success:hover {
+        .btn-success:hover:not(:disabled) {
             background: var(--success-green-hover);
             border-color: var(--success-green-hover);
+        }
+
+        .btn-warning {
+            background: var(--warning-yellow);
+            color: white;
+            border-color: var(--warning-yellow);
+        }
+
+        .btn-icon {
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         /* Question Display */
@@ -341,7 +436,8 @@
             letter-spacing: 0.5px;
         }
 
-        .answer-input-section input[type="text"] {
+        .answer-input-section input[type="text"],
+        .answer-input-section textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
@@ -352,7 +448,13 @@
             color: var(--text-primary);
         }
 
-        .answer-input-section input[type="text"]:focus {
+        .answer-input-section textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .answer-input-section input[type="text"]:focus,
+        .answer-input-section textarea:focus {
             outline: none;
             border-color: var(--primary-blue);
         }
@@ -410,31 +512,161 @@
 
         .modal-content {
             background-color: var(--panel-bg);
-            margin: 15% auto;
+            margin: 10% auto;
             padding: 30px;
             border-radius: 4px;
             width: 90%;
-            max-width: 500px;
-            text-align: center;
+            max-width: 450px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .modal-content h2 {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             color: var(--text-primary);
             font-size: 1.5em;
+            text-align: center;
         }
 
         .modal-content p {
             margin-bottom: 25px;
             color: var(--text-secondary);
             line-height: 1.6;
+            text-align: center;
         }
 
         .modal-buttons {
             display: flex;
             gap: 10px;
             justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: normal;
+            color: var(--text-secondary);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: auto;
+            height: auto;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* Auth Modal */
+        .auth-providers {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .auth-provider-btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            background: white;
+            color: #333;
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .auth-provider-btn:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .auth-provider-btn.google {
+            border-color: #4285f4;
+            color: #4285f4;
+        }
+
+        .auth-provider-btn.google:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .auth-divider {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--text-secondary);
+            font-size: 0.85em;
+        }
+
+        /* Saved Questions List */
+        .saved-questions-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .saved-question-item {
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .saved-question-item:hover {
+            background: var(--border-color);
+        }
+
+        .saved-question-preview {
+            font-size: 0.9em;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .saved-question-meta {
+            font-size: 0.75em;
+            color: var(--text-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .saved-question-remove {
+            background: none;
+            border: none;
+            color: var(--error-red);
+            padding: 2px 6px;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-tertiary);
+            font-size: 0.9em;
+        }
+
+        /* Statistics Display */
+        .stats-info {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            line-height: 1.6;
         }
 
         .correct {
@@ -447,16 +679,6 @@
 
         .hidden {
             display: none;
-        }
-
-        /* Statistics Display */
-        .stats-info {
-            font-size: 0.9em;
-            color: var(--text-secondary);
-            padding: 12px;
-            background: var(--bg-tertiary);
-            border-radius: 3px;
-            line-height: 1.6;
         }
 
         /* Responsive */
@@ -486,6 +708,11 @@
                 gap: 10px;
                 text-align: center;
             }
+
+            .user-section {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -494,6 +721,16 @@
     <div class="header">
         <div class="header-content">
             <div class="site-title"><span style="color: var(--primary-blue);">HB</span>Reader</div>
+
+            <!-- User Account Section -->
+            <div class="user-section">
+                <button class="login-btn" id="loginBtn">Login</button>
+                <div class="user-info hidden" id="userInfo">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <span id="userName"></span>
+                    <button class="logout-btn" id="logoutBtn">Logout</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -511,6 +748,9 @@
                 <button class="btn-primary" id="nextQuestion">Next Question</button>
                 <button class="hidden" id="pauseButton">Pause</button>
                 <button class="btn-success hidden" id="showAnswer">Show Answer</button>
+                <button class="btn-warning btn-icon hidden" id="saveQuestionBtn" title="Save this question">
+                    ⭐ Save
+                </button>
             </div>
 
             <!-- Question Display -->
@@ -574,6 +814,16 @@
                 </div>
             </div>
 
+            <!-- Saved Questions -->
+            <div class="setting-group">
+                <label>Saved Questions</label>
+                <div id="savedQuestionsList">
+                    <div class="empty-state" id="savedQuestionsEmpty">
+                        Login to save questions
+                    </div>
+                </div>
+            </div>
+
             <!-- Statistics -->
             <div class="setting-group">
                 <label>Statistics</label>
@@ -582,7 +832,31 @@
         </div>
     </div>
 
-    <!-- Modal for feedback -->
+    <!-- Login/Signup Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            <h2>Sign In to HBReader</h2>
+            <p>Save your progress and preferences across all devices</p>
+
+            <div class="auth-providers">
+                <button class="auth-provider-btn google" onclick="signInWithGoogle()">
+                    <span>🔵</span> Continue with Google
+                </button>
+                <!-- Facebook and Microsoft can be added after OAuth setup -->
+                <!-- <button class="auth-provider-btn" onclick="signInWithFacebook()">
+                    Continue with Facebook
+                </button>
+                <button class="auth-provider-btn" onclick="signInWithMicrosoft()">
+                    Continue with Microsoft
+                </button> -->
+            </div>
+
+            <div class="auth-divider">More options coming soon</div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
     <div id="feedbackModal" class="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Result</h2>
@@ -592,6 +866,34 @@
     </div>
 
     <script>
+        // ============================================
+        // FIREBASE CONFIGURATION
+        // ============================================
+
+        // TODO: Replace with your Firebase config from Firebase Console
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        let auth, db;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
+
+        // ============================================
+        // GLOBAL STATE
+        // ============================================
+
         let questions = {
             preliminary: [],
             quarterfinal: [],
@@ -606,8 +908,275 @@
         let currentSection = 'question';
         let answerInputShown = false;
         let questionsPracticed = 0;
+        let currentUser = null;
+        let savedQuestions = [];
 
-        // Theme Management
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
+
+        // Monitor auth state
+        auth.onAuthStateChanged(async (user) => {
+            currentUser = user;
+
+            if (user) {
+                // User is signed in
+                updateUserUI(user);
+                await loadUserData();
+            } else {
+                // User is signed out
+                updateUserUI(null);
+                savedQuestions = [];
+                updateSavedQuestionsList();
+            }
+        });
+
+        function updateUserUI(user) {
+            const loginBtn = document.getElementById('loginBtn');
+            const userInfo = document.getElementById('userInfo');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const saveBtn = document.getElementById('saveQuestionBtn');
+            const emptyState = document.getElementById('savedQuestionsEmpty');
+
+            if (user) {
+                loginBtn.classList.add('hidden');
+                userInfo.classList.remove('hidden');
+
+                // Set user avatar
+                if (user.photoURL) {
+                    userAvatar.innerHTML = `<img src="${user.photoURL}" alt="${user.displayName}">`;
+                } else {
+                    userAvatar.textContent = user.email ? user.email[0].toUpperCase() : 'U';
+                }
+
+                // Set user name
+                userName.textContent = user.displayName || user.email;
+
+                // Show save button when question is visible
+                if (currentQuestion) {
+                    saveBtn.classList.remove('hidden');
+                }
+
+                emptyState.textContent = 'No saved questions yet';
+            } else {
+                loginBtn.classList.remove('hidden');
+                userInfo.classList.add('hidden');
+                saveBtn.classList.add('hidden');
+                emptyState.textContent = 'Login to save questions';
+            }
+        }
+
+        function showAuthModal() {
+            document.getElementById('authModal').style.display = 'block';
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+
+        async function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await auth.signInWithPopup(provider);
+                closeAuthModal();
+            } catch (error) {
+                console.error("Google sign-in error:", error);
+                alert("Sign-in failed: " + error.message);
+            }
+        }
+
+        async function signOut() {
+            try {
+                await auth.signOut();
+            } catch (error) {
+                console.error("Sign-out error:", error);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('loginBtn').addEventListener('click', showAuthModal);
+        document.getElementById('logoutBtn').addEventListener('click', signOut);
+
+        // ============================================
+        // FIRESTORE DATA OPERATIONS
+        // ============================================
+
+        async function loadUserData() {
+            if (!currentUser) return;
+
+            try {
+                // Load preferences
+                const prefsDoc = await db.collection('users').doc(currentUser.uid)
+                    .collection('data').doc('preferences').get();
+
+                if (prefsDoc.exists) {
+                    const prefs = prefsDoc.data();
+
+                    // Apply theme
+                    if (prefs.theme) {
+                        setTheme(prefs.theme);
+                    }
+
+                    // Apply reading speed
+                    if (prefs.readingSpeed) {
+                        document.getElementById('speed').value = prefs.readingSpeed;
+                        document.getElementById('speedValue').textContent = prefs.readingSpeed;
+                        document.getElementById('speedLabel').textContent = getSpeedLabel(prefs.readingSpeed);
+                    }
+                }
+
+                // Load saved questions
+                const questionsSnapshot = await db.collection('users').doc(currentUser.uid)
+                    .collection('savedQuestions').orderBy('savedAt', 'desc').get();
+
+                savedQuestions = questionsSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                updateSavedQuestionsList();
+            } catch (error) {
+                console.error("Error loading user data:", error);
+            }
+        }
+
+        async function saveUserPreferences() {
+            if (!currentUser) return;
+
+            const theme = document.documentElement.getAttribute('data-theme');
+            const readingSpeed = parseInt(document.getElementById('speed').value);
+
+            try {
+                await db.collection('users').doc(currentUser.uid)
+                    .collection('data').doc('preferences').set({
+                        theme: theme,
+                        readingSpeed: readingSpeed,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+            } catch (error) {
+                console.error("Error saving preferences:", error);
+            }
+        }
+
+        async function saveCurrentQuestion() {
+            if (!currentUser || !currentQuestion) {
+                alert('Please login to save questions');
+                return;
+            }
+
+            // Check if already saved
+            const alreadySaved = savedQuestions.some(q =>
+                q.question === currentQuestion.question
+            );
+
+            if (alreadySaved) {
+                alert('Question already saved!');
+                return;
+            }
+
+            try {
+                const docRef = await db.collection('users').doc(currentUser.uid)
+                    .collection('savedQuestions').add({
+                        question: currentQuestion.question,
+                        answer: currentQuestion.answer,
+                        difficulty: document.getElementById('category').value,
+                        savedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                savedQuestions.unshift({
+                    id: docRef.id,
+                    question: currentQuestion.question,
+                    answer: currentQuestion.answer,
+                    difficulty: document.getElementById('category').value,
+                    savedAt: new Date()
+                });
+
+                updateSavedQuestionsList();
+                alert('Question saved! ⭐');
+            } catch (error) {
+                console.error("Error saving question:", error);
+                alert('Failed to save question: ' + error.message);
+            }
+        }
+
+        async function removeSavedQuestion(questionId) {
+            if (!currentUser) return;
+
+            try {
+                await db.collection('users').doc(currentUser.uid)
+                    .collection('savedQuestions').doc(questionId).delete();
+
+                savedQuestions = savedQuestions.filter(q => q.id !== questionId);
+                updateSavedQuestionsList();
+            } catch (error) {
+                console.error("Error removing question:", error);
+            }
+        }
+
+        function updateSavedQuestionsList() {
+            const container = document.getElementById('savedQuestionsList');
+            const emptyState = document.getElementById('savedQuestionsEmpty');
+
+            if (savedQuestions.length === 0) {
+                container.innerHTML = '';
+                container.appendChild(emptyState);
+                return;
+            }
+
+            const listDiv = document.createElement('div');
+            listDiv.className = 'saved-questions-list';
+
+            savedQuestions.forEach(q => {
+                const item = document.createElement('div');
+                item.className = 'saved-question-item';
+
+                const preview = document.createElement('div');
+                preview.className = 'saved-question-preview';
+                preview.innerHTML = q.question.substring(0, 100) + '...';
+
+                const meta = document.createElement('div');
+                meta.className = 'saved-question-meta';
+                meta.innerHTML = `
+                    <span>${q.difficulty}</span>
+                    <button class="saved-question-remove" onclick="removeSavedQuestion('${q.id}')">Remove</button>
+                `;
+
+                item.appendChild(preview);
+                item.appendChild(meta);
+
+                item.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('saved-question-remove')) {
+                        viewSavedQuestion(q);
+                    }
+                });
+
+                listDiv.appendChild(item);
+            });
+
+            container.innerHTML = '';
+            container.appendChild(listDiv);
+        }
+
+        function viewSavedQuestion(savedQ) {
+            currentQuestion = {
+                question: savedQ.question,
+                answer: savedQ.answer
+            };
+
+            document.getElementById('questionText').innerHTML = savedQ.question;
+            document.getElementById('answerText').innerHTML = savedQ.answer;
+            document.querySelector('.score-display').textContent = 'Viewing saved question';
+            document.getElementById('showAnswer').classList.add('hidden');
+            document.getElementById('pauseButton').classList.add('hidden');
+            document.getElementById('saveQuestionBtn').classList.remove('hidden');
+            document.getElementById('spacebarHint').classList.add('hidden');
+        }
+
+        // ============================================
+        // THEME MANAGEMENT
+        // ============================================
+
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             setTheme(savedTheme);
@@ -630,6 +1199,11 @@
                 themeLabel.textContent = 'Light Mode';
                 toggleSwitch.classList.remove('active');
             }
+
+            // Save to Firestore if logged in
+            if (currentUser) {
+                saveUserPreferences();
+            }
         }
 
         function toggleTheme() {
@@ -640,7 +1214,10 @@
 
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
-        // Load questions from JSON
+        // ============================================
+        // QUESTIONS MANAGEMENT
+        // ============================================
+
         async function loadQuestions() {
             try {
                 const response = await fetch('questions.json');
@@ -669,6 +1246,11 @@
             const label = getSpeedLabel(parseInt(speed));
             document.getElementById('speedValue').textContent = speed;
             document.getElementById('speedLabel').textContent = label;
+
+            // Save to Firestore if logged in
+            if (currentUser) {
+                saveUserPreferences();
+            }
         });
 
         // Update stats when category changes
@@ -687,7 +1269,10 @@
             return categoryQuestions[randomIndex];
         }
 
-        // Stream text character by character with real-time speed control
+        // ============================================
+        // QUESTION STREAMING & DISPLAY
+        // ============================================
+
         function streamText(text, targetElement, callback) {
             let displayText = '';
             currentCharIndex = 0;
@@ -696,12 +1281,11 @@
             function addNextChar() {
                 if (isPaused) return;
 
-                // Check if enough time has passed based on current speed setting
                 const currentSpeed = parseInt(document.getElementById('speed').value);
                 const now = Date.now();
 
                 if (now - lastCharTime < currentSpeed) {
-                    return; // Not enough time has passed yet
+                    return;
                 }
 
                 lastCharTime = now;
@@ -715,7 +1299,6 @@
 
                 const char = text[currentCharIndex];
 
-                // Handle HTML tags
                 if (char === '<') {
                     let tagEnd = text.indexOf('>', currentCharIndex);
                     if (tagEnd !== -1) {
@@ -733,11 +1316,9 @@
                 targetElement.innerHTML = displayText + '<span class="cursor"></span>';
             }
 
-            // Check every 10ms, but only add character when enough time has passed
             streamingInterval = setInterval(addNextChar, 10);
         }
 
-        // Display question
         function displayQuestion() {
             currentQuestion = getRandomQuestion();
 
@@ -752,32 +1333,32 @@
             const questionText = document.getElementById('questionText');
             questionText.innerHTML = '';
 
-            // Reset answer
             document.getElementById('answerText').innerHTML = '<span style="color: var(--text-tertiary); font-style: italic;">Answer will appear here</span>';
-
-            // Update score display
-            document.getElementById('score-display') && (document.querySelector('.score-display').textContent = `Question ${questionsPracticed}`);
+            document.querySelector('.score-display').textContent = `Question ${questionsPracticed}`;
 
             document.getElementById('pauseButton').classList.remove('hidden');
             document.getElementById('showAnswer').classList.add('hidden');
             document.getElementById('spacebarHint').classList.remove('hidden');
+
+            // Show save button if logged in
+            if (currentUser) {
+                document.getElementById('saveQuestionBtn').classList.remove('hidden');
+            }
+
             currentSection = 'question';
             isPaused = false;
             answerInputShown = false;
 
-            // Stream the question text
             streamText(
                 currentQuestion.question,
                 questionText,
                 () => {
-                    // When question is done, show the "Show Answer" button
                     document.getElementById('showAnswer').classList.remove('hidden');
                     document.getElementById('pauseButton').classList.add('hidden');
                 }
             );
         }
 
-        // Show answer input
         function showAnswerInput() {
             if (answerInputShown) return;
 
@@ -804,7 +1385,6 @@
             questionDisplay.insertBefore(inputSection, document.querySelector('.answer-section'));
             document.getElementById('userAnswer').focus();
 
-            // Allow Enter key to submit
             document.getElementById('userAnswer').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     checkAnswer();
@@ -812,7 +1392,6 @@
             });
         }
 
-        // Normalize answer for comparison
         function normalizeAnswer(answer) {
             let normalized = answer.replace(/<[^>]*>/g, '');
             normalized = normalized.split(/\(|accept/i)[0];
@@ -824,7 +1403,6 @@
             return normalized;
         }
 
-        // Check if user answer is correct
         function checkAnswer() {
             const userAnswer = document.getElementById('userAnswer').value.trim();
             if (!userAnswer) {
@@ -847,7 +1425,6 @@
             }
         }
 
-        // Show correct answer modal
         function showCorrectModal() {
             const modal = document.getElementById('feedbackModal');
             const modalTitle = document.getElementById('modalTitle');
@@ -863,7 +1440,6 @@
             modal.style.display = 'block';
         }
 
-        // Show incorrect answer modal
         function showIncorrectModal(correctAnswer) {
             const modal = document.getElementById('feedbackModal');
             const modalTitle = document.getElementById('modalTitle');
@@ -880,7 +1456,6 @@
             modal.style.display = 'block';
         }
 
-        // Resume question after pausing
         function resumeQuestion() {
             const inputSection = document.getElementById('answerInputSection');
             if (inputSection) {
@@ -936,7 +1511,6 @@
             streamingInterval = setInterval(addNextChar, 10);
         }
 
-        // Reveal the answer
         function revealAnswer() {
             closeModal();
             const inputSection = document.getElementById('answerInputSection');
@@ -952,7 +1526,6 @@
             showAnswer();
         }
 
-        // Show answer
         function showAnswer() {
             document.getElementById('showAnswer').classList.add('hidden');
             document.getElementById('pauseButton').classList.add('hidden');
@@ -963,19 +1536,16 @@
             document.getElementById('answerText').innerHTML = currentQuestion.answer;
         }
 
-        // Close modal
         function closeModal() {
             document.getElementById('feedbackModal').style.display = 'none';
             document.getElementById('userAnswer')?.focus();
         }
 
-        // Next question from modal
         function nextQuestionFromModal() {
             closeModal();
             displayQuestion();
         }
 
-        // Pause/Resume streaming
         function togglePause() {
             isPaused = !isPaused;
             const button = document.getElementById('pauseButton');
@@ -991,7 +1561,10 @@
             }
         }
 
-        // Keyboard event for spacebar
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' && currentQuestion && !answerInputShown &&
                 e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
@@ -1000,20 +1573,27 @@
             }
         });
 
-        // Event listeners
         document.getElementById('nextQuestion').addEventListener('click', displayQuestion);
         document.getElementById('showAnswer').addEventListener('click', showAnswer);
         document.getElementById('pauseButton').addEventListener('click', togglePause);
+        document.getElementById('saveQuestionBtn').addEventListener('click', saveCurrentQuestion);
 
-        // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('feedbackModal');
-            if (event.target === modal) {
+            const feedbackModal = document.getElementById('feedbackModal');
+            const authModal = document.getElementById('authModal');
+
+            if (event.target === feedbackModal) {
                 closeModal();
+            }
+            if (event.target === authModal) {
+                closeAuthModal();
             }
         }
 
-        // Initialize
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
         initTheme();
         loadQuestions();
     </script>
