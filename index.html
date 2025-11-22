@@ -795,6 +795,12 @@
 
         // Stream text character by character with real-time speed control
         function streamText(text, targetElement, callback) {
+            // IMPORTANT: Stop any existing streaming first
+            if (streamingInterval) {
+                clearInterval(streamingInterval);
+                streamingInterval = null;
+            }
+
             // Clean start - remove any existing cursors
             removeCursor(targetElement);
 
@@ -850,6 +856,16 @@
 
         // Display question
         function displayQuestion() {
+            // IMPORTANT: Clean up any previous question state first
+            clearInterval(streamingInterval);
+            streamingInterval = null;
+
+            // Remove any answer input sections that might be open
+            const existingInputSection = document.getElementById('answerInputSection');
+            if (existingInputSection) {
+                existingInputSection.remove();
+            }
+
             currentQuestion = getRandomQuestion();
 
             if (!currentQuestion) {
@@ -861,6 +877,8 @@
             updateStats();
 
             const questionText = document.getElementById('questionText');
+            // Clean any cursors and reset content
+            removeCursor(questionText);
             questionText.innerHTML = '';
 
             // Reset answer
@@ -869,12 +887,16 @@
             // Update score display
             document.getElementById('score-display') && (document.querySelector('.score-display').textContent = `Question ${questionsPracticed}`);
 
+            // Reset all button states
             document.getElementById('pauseButton').classList.remove('hidden');
             document.getElementById('showAnswer').classList.add('hidden');
             document.getElementById('spacebarHint').classList.remove('hidden');
+
+            // Reset state variables
             currentSection = 'question';
             isPaused = false;
             answerInputShown = false;
+            currentCharIndex = 0;
 
             // Update buzzer visibility
             updateBuzzerVisibility();
@@ -1032,6 +1054,12 @@
 
             // Update buzzer visibility
             updateBuzzerVisibility();
+
+            // Clear any existing interval before resuming
+            if (streamingInterval) {
+                clearInterval(streamingInterval);
+                streamingInterval = null;
+            }
 
             const targetElement = document.getElementById('questionText');
             const text = currentQuestion.question;
