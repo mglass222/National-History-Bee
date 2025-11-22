@@ -1693,7 +1693,6 @@
                 await sendEmailVerification(userCredential.user);
 
                 closeAuthModal();
-                alert('Account created! Please check your email for a verification link.');
             } catch (error) {
                 errorDiv.textContent = getAuthErrorMessage(error.code);
                 errorDiv.classList.add('show');
@@ -1735,24 +1734,36 @@
 
             if (user) {
                 currentUser = user;
-                userAuthDiv.innerHTML = `
-                    <div class="user-profile">
-                        <span class="user-email">${user.email}</span>
-                        <button class="btn-logout" onclick="handleLogout()">Logout</button>
-                    </div>
-                `;
-                // Show navigation tabs when logged in
-                navTabs.classList.add('show');
 
-                // Check email verification status
-                if (!user.emailVerified) {
-                    verificationBanner.classList.add('show');
-                } else {
+                // Check if email is verified
+                if (user.emailVerified) {
+                    // Email verified - show full logged-in UI
+                    userAuthDiv.innerHTML = `
+                        <div class="user-profile">
+                            <span class="user-email">${user.email}</span>
+                            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+                        </div>
+                    `;
+                    // Show navigation tabs
+                    navTabs.classList.add('show');
+                    // Hide verification banner
                     verificationBanner.classList.remove('show');
+                    // Load user's history from Firestore
+                    loadUserHistory();
+                } else {
+                    // Email NOT verified - don't show logged-in UI
+                    userAuthDiv.innerHTML = `
+                        <button class="btn-login" onclick="showAuthModal()">Login / Sign Up</button>
+                    `;
+                    // Hide navigation tabs
+                    navTabs.classList.remove('show');
+                    // Show verification banner
+                    verificationBanner.classList.add('show');
+                    // Navigate to practice page if on dashboard
+                    if (window.location.hash === '#dashboard') {
+                        navigateTo('practice');
+                    }
                 }
-
-                // Load user's history from Firestore
-                loadUserHistory();
             } else {
                 currentUser = null;
                 userAuthDiv.innerHTML = `
