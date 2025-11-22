@@ -997,13 +997,20 @@
             document.getElementById('pauseButton').classList.add('hidden');
             document.getElementById('spacebarHint').classList.add('hidden');
 
-            // Show the answer with feedback
+            // Show the answer with user's response and feedback
             const answerText = document.getElementById('answerText');
-            if (isCorrect) {
-                answerText.innerHTML = `<span class="correct" style="font-weight: 600; font-size: 1.1em;">Correct!</span><br><br>${correctAnswer}`;
-            } else {
-                answerText.innerHTML = `<span class="incorrect" style="font-weight: 600; font-size: 1.1em;">Incorrect</span><br><br>${correctAnswer}`;
-            }
+            const indicator = isCorrect
+                ? '<span class="correct" style="font-size: 1.3em;">✓</span>'
+                : '<span class="incorrect" style="font-size: 1.3em;">✗</span>';
+
+            answerText.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <strong>Your Answer:</strong> ${userAnswer} ${indicator}
+                </div>
+                <div>
+                    <strong>Correct Answer:</strong> ${correctAnswer}
+                </div>
+            `;
 
             currentSection = 'answer';
             answerInputShown = false;
