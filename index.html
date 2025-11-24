@@ -544,11 +544,11 @@
             padding: 15px 20px;
             margin: 10px 0;
             border-radius: 8px;
-            background: var(--warning-yellow);
+            background: var(--primary-blue);
             color: white;
             font-size: 1.1em;
             font-weight: 700;
-            border: 3px solid var(--text-primary);
+            border: 3px solid var(--primary-blue);
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             cursor: pointer;
             transition: all 0.2s;
@@ -557,6 +557,7 @@
 
         .buzzer-button:active {
             transform: scale(0.98);
+            background: var(--primary-blue-hover);
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
@@ -985,6 +986,15 @@
             background: #3d3519;
             border-color: #ffc107;
             color: #ffc107;
+        }
+
+        [data-theme="dark"] .buzzer-button {
+            background: var(--warning-yellow);
+            border-color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .buzzer-button:active {
+            background: #d89b00;
         }
 
         .verification-banner.show {
