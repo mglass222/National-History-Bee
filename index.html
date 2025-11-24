@@ -2074,12 +2074,34 @@
             setFontSize(size);
         });
 
+        // Device Detection (Mobile/Tablet vs Desktop)
+        function detectDeviceType() {
+            // Modern approach: Check userAgentData if available
+            if (navigator.userAgentData) {
+                // userAgentData.mobile is true for phones and tablets
+                return navigator.userAgentData.mobile ? 'mobile' : 'desktop';
+            }
+
+            // Fallback: User-Agent string parsing
+            const ua = navigator.userAgent;
+
+            // Check for mobile phones and tablets
+            // "Mobi" indicates mobile phones
+            // "iPad" and "Android" (without "Mobile") indicate tablets
+            if (/Mobi|Android|iPad|Tablet/i.test(ua)) {
+                return 'mobile';
+            }
+
+            // Desktop (including resized windows and touchscreen laptops)
+            return 'desktop';
+        }
+
         // Buzzer Button Management (Mobile/Tablet)
         function updateBuzzerVisibility() {
             const buzzer = document.getElementById('buzzerButton');
             const spacebarHint = document.getElementById('spacebarHint');
-            // Detect mobile/tablet by touch capability OR screen width (including iPads in landscape)
-            const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 1366);
+            // Detect mobile/tablet based on User-Agent, not window size
+            const isMobile = detectDeviceType() === 'mobile';
             const isStreaming = currentQuestion && !answerInputShown && currentSection === 'question';
 
             if (isMobile && isStreaming) {
