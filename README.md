@@ -106,7 +106,7 @@ This site is configured for GitHub Pages:
 
 ## Data Source
 
-Questions are from official National History Bee competitions (2014-2025). PDF files are not included in this repository due to size and copyright considerations.
+Questions are from official National History Bee competitions (2014-2025).
 
 ## License
 
