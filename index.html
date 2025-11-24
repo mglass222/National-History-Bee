@@ -2078,7 +2078,8 @@
         function updateBuzzerVisibility() {
             const buzzer = document.getElementById('buzzerButton');
             const spacebarHint = document.getElementById('spacebarHint');
-            const isMobile = window.innerWidth <= 1024;
+            // Detect mobile/tablet by touch capability OR screen width (including iPads in landscape)
+            const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 1366);
             const isStreaming = currentQuestion && !answerInputShown && currentSection === 'question';
 
             if (isMobile && isStreaming) {
