@@ -191,6 +191,154 @@
             margin-top: 6px;
         }
 
+        /* Filter Controls */
+        .filter-path-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .filter-path-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-size: 0.85em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-path-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary-blue);
+        }
+
+        .filter-path-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .filter-section {
+            margin-bottom: 12px;
+        }
+
+        .filter-section label {
+            display: block;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            font-size: 0.9em;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .active-filters {
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .active-filters-label {
+            font-size: 0.75em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        #activeFilterTags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .filter-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .filter-tag .remove:hover {
+            opacity: 1;
+        }
+
+        .clear-filters-btn {
+            width: 100%;
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 0.8em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .clear-filters-btn:hover {
+            background: var(--error-red);
+            color: white;
+            border-color: var(--error-red);
+        }
+
+        .matching-count {
+            margin-top: 12px;
+            padding: 8px 12px;
+            background: var(--success-green);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .matching-count.warning {
+            background: var(--warning-yellow);
+            color: var(--text-primary);
+        }
+
+        .matching-count.error {
+            background: var(--error-red);
+        }
+
         /* Theme Toggle */
         .theme-toggle-container {
             display: flex;
@@ -983,6 +1131,10 @@
             text-align: center;
         }
 
+        [data-theme="dark"] .site-title {
+            color: var(--text-secondary);
+        }
+
         [data-theme="dark"] .verification-banner {
             background: #3d3519;
             border-color: #ffc107;
@@ -1046,7 +1198,7 @@
             background: none;
             border: none;
             color: var(--text-secondary);
-            font-size: 0.95em;
+            font-size: 1.05em;
             font-weight: 500;
             cursor: pointer;
             border-bottom: 2px solid transparent;
@@ -1092,8 +1244,8 @@
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
             margin-bottom: 30px;
         }
 
@@ -1101,7 +1253,7 @@
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 25px;
+            padding: 15px;
             transition: all 0.3s;
         }
 
@@ -1115,26 +1267,27 @@
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            text-align: center;
         }
 
         .card-body {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
         /* Radial Progress Chart */
         .radial-chart {
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: 150px;
+            height: 150px;
         }
 
         .radial-chart.small {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
         }
 
         .radial-chart svg {
@@ -1222,8 +1375,8 @@
         /* Difficulty Charts Grid */
         .difficulty-charts {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
         }
 
         .difficulty-chart-item {
@@ -1241,6 +1394,79 @@
             font-size: 0.8em;
             color: var(--text-secondary);
             margin-top: 3px;
+        }
+
+        /* Category Stats */
+        .category-section {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .category-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .category-section-title {
+            font-size: 0.75em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .category-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .category-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85em;
+        }
+
+        .category-stat-label {
+            min-width: 105px;
+            color: var(--text-primary);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .category-stat-bar-container {
+            flex: 1;
+            height: 28px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .category-stat-bar {
+            height: 100%;
+            background: var(--success-green);
+            border-radius: 8px;
+            transition: width 0.3s ease;
+        }
+
+        .category-stat-value {
+            min-width: 35px;
+            text-align: right;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .category-stat-count {
+            min-width: 25px;
+            text-align: right;
+            color: var(--text-tertiary);
+            font-size: 0.9em;
         }
 
         /* History Table */
@@ -1283,23 +1509,81 @@
         .history-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.95em;
         }
 
         .history-table th {
             text-align: left;
-            padding: 12px;
+            padding: 10px 12px;
             border-bottom: 2px solid var(--border-color);
-            font-size: 0.85em;
+            font-size: 0.9em;
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            position: relative;
+            user-select: none;
+        }
+
+        .history-table th:first-child {
+            font-size: 0.85em;
+        }
+
+        .history-table th .resizer {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 8px;
+            cursor: col-resize;
+            user-select: none;
+            border-right: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .history-table th .resizer::after {
+            content: '';
+            position: absolute;
+            right: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 50%;
+            background: var(--border-color);
+            opacity: 0.3;
+        }
+
+        .history-table th .resizer:hover {
+            border-right-color: var(--primary-blue);
+        }
+
+        .history-table th .resizer:hover::after {
+            background: var(--primary-blue);
+            opacity: 1;
+        }
+
+        .history-table th .resizer:active {
+            border-right-color: var(--primary-blue);
+        }
+
+        .history-table th .resizer:active::after {
+            background: var(--primary-blue);
+            opacity: 1;
         }
 
         .history-table td {
-            padding: 12px;
+            padding: 10px 12px;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-primary);
+            font-size: 0.95em;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            vertical-align: top;
+        }
+
+        .history-table td:first-child {
+            font-size: 0.9em;
         }
 
         .history-table tr {
@@ -1413,7 +1697,7 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
@@ -1549,6 +1833,83 @@
                 </div>
             </div>
 
+            <!-- Question Filters -->
+            <div class="setting-group">
+                <div class="setting-header">Question Filters</div>
+
+                <!-- Filter Path Selection -->
+                <div class="filter-path-selector">
+                    <button class="filter-path-btn active" id="filterByRegion" onclick="setFilterPath('region')">
+                        By Region
+                    </button>
+                    <button class="filter-path-btn" id="filterByTime" onclick="setFilterPath('time')">
+                        By Time Period
+                    </button>
+                </div>
+
+                <!-- Region Filter (Path A) -->
+                <div id="regionFilterSection" class="filter-section">
+                    <label>Region</label>
+                    <select id="regionFilter" class="filter-select">
+                        <option value="all">All Regions</option>
+                        <option value="United States">United States</option>
+                        <option value="Europe">Europe</option>
+                        <option value="Asia">Asia</option>
+                        <option value="Latin America & Caribbean">Latin America & Caribbean</option>
+                        <option value="Africa">Africa</option>
+                        <option value="Middle East & North Africa">Middle East & North Africa</option>
+                        <option value="Global/Multi-Regional">Global/Multi-Regional</option>
+                    </select>
+                </div>
+
+                <!-- Time Period Filter (Path B) -->
+                <div id="timeFilterSection" class="filter-section" style="display: none;">
+                    <label>Time Period</label>
+                    <select id="timeFilter" class="filter-select">
+                        <option value="all">All Time Periods</option>
+                        <option value="Ancient World (pre-500 CE)">Ancient World (pre-500 CE)</option>
+                        <option value="Medieval Era (500-1450)">Medieval Era (500-1450)</option>
+                        <option value="Early Modern (1450-1750)">Early Modern (1450-1750)</option>
+                        <option value="Age of Revolutions (1750-1850)">Age of Revolutions (1750-1850)</option>
+                        <option value="Industrial & Imperial Age (1850-1914)">Industrial & Imperial Age (1850-1914)</option>
+                        <option value="World Wars & Interwar (1914-1945)">World Wars & Interwar (1914-1945)</option>
+                        <option value="Contemporary Era (1945-present)">Contemporary Era (1945-present)</option>
+                    </select>
+                </div>
+
+                <!-- Secondary Filter (shown after primary selection) -->
+                <div id="secondaryFilterSection" class="filter-section" style="display: none;">
+                    <label id="secondaryFilterLabel">Time Period</label>
+                    <select id="secondaryFilter" class="filter-select">
+                        <option value="all">All</option>
+                    </select>
+                </div>
+
+                <!-- Answer Type Filter -->
+                <div class="filter-section">
+                    <label>Answer Type</label>
+                    <select id="answerTypeFilter" class="filter-select">
+                        <option value="all">All Types</option>
+                        <option value="People & Biography">People & Biography</option>
+                        <option value="Events & Incidents">Events & Incidents</option>
+                        <option value="Places & Geography">Places & Geography</option>
+                        <option value="Works & Documents">Works & Documents</option>
+                        <option value="Groups & Institutions">Groups & Institutions</option>
+                        <option value="Concepts & Ideas">Concepts & Ideas</option>
+                    </select>
+                </div>
+
+                <!-- Active Filters Display -->
+                <div id="activeFilters" class="active-filters" style="display: none;">
+                    <div class="active-filters-label">Active Filters:</div>
+                    <div id="activeFilterTags"></div>
+                    <button class="clear-filters-btn" onclick="clearAllFilters()">Clear All</button>
+                </div>
+
+                <!-- Matching Questions Count -->
+                <div id="matchingCount" class="matching-count"></div>
+            </div>
+
             <!-- Theme Toggle -->
             <div class="setting-group">
                 <div class="setting-header">Appearance</div>
@@ -1613,32 +1974,23 @@
                 </div>
             </div>
 
-            <!-- Performance Metrics Card -->
+            <!-- Performance by Answer Type Card -->
             <div class="dashboard-card">
-                <div class="card-header">Performance Metrics</div>
-                <div class="card-body">
-                    <div class="stat-item" style="margin-bottom: 20px;">
-                        <div class="stat-value" id="currentStreak">0</div>
-                        <div class="stat-label">Current Streak</div>
-                    </div>
-                    <div class="stat-item" style="margin-bottom: 20px;">
-                        <div class="stat-value" id="bestStreak">0</div>
-                        <div class="stat-label">Best Streak</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="totalAttempted">0</div>
-                        <div class="stat-label">Total Attempted</div>
+                <div class="card-header">Performance by Answer Type</div>
+                <div class="card-body" style="align-items: stretch;">
+                    <div id="answerTypeStats" class="category-stats">
+                        <!-- Answer type stats will be generated by JS -->
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Performance by Difficulty -->
-        <div class="dashboard-card">
-            <div class="card-header">Performance by Difficulty</div>
-            <div class="card-body">
-                <div class="difficulty-charts" id="difficultyCharts">
-                    <!-- Difficulty charts will be generated by JS -->
+            <!-- Performance by Difficulty -->
+            <div class="dashboard-card">
+                <div class="card-header">Performance by Difficulty</div>
+                <div class="card-body">
+                    <div class="difficulty-charts" id="difficultyCharts">
+                        <!-- Difficulty charts will be generated by JS -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -1755,6 +2107,7 @@
             semifinals: [],
             finals: []
         };
+        let questionMetadata = {}; // Categorization metadata
         let currentQuestion = null;
         let streamingInterval = null;
         let isPaused = false;
@@ -1764,6 +2117,15 @@
         let questionsPracticed = 0;
         let questionHistory = []; // Track history of practiced questions
         let currentUser = null; // Current authenticated user
+
+        // Filter state
+        let activeFilters = {
+            path: 'region', // 'region' or 'time'
+            region: 'all',
+            timePeriod: 'all',
+            secondary: 'all',
+            answerType: 'all'
+        };
 
         // Firebase Authentication Functions
         function showAuthModal() {
@@ -1900,7 +2262,7 @@
             return errorMessages[errorCode] || `An error occurred (${errorCode || 'unknown'}). Please try again.`;
         }
 
-        function updateUserUI(user) {
+        async function updateUserUI(user) {
             const userAuthDiv = document.getElementById('userAuth');
             const navTabs = document.getElementById('navTabs');
             const verificationBanner = document.getElementById('verificationBanner');
@@ -1922,7 +2284,11 @@
                     // Hide verification banner
                     verificationBanner.classList.remove('show');
                     // Load user's history from Firestore
-                    loadUserHistory();
+                    await loadUserHistory();
+                    // If on dashboard, refresh it to show the loaded data
+                    if (window.location.hash === '#dashboard') {
+                        refreshDashboard();
+                    }
                 } else {
                     // Email NOT verified - don't show logged-in UI
                     userAuthDiv.innerHTML = `
@@ -2125,28 +2491,282 @@
         // Update buzzer visibility on window resize
         window.addEventListener('resize', updateBuzzerVisibility);
 
+        // ============================================
+        // FILTER MANAGEMENT FUNCTIONS
+        // ============================================
+
+        // Load question metadata
+        async function loadMetadata() {
+            try {
+                const response = await fetch('question_metadata.json');
+                const data = await response.json();
+                questionMetadata = data.categories;
+                console.log(`Loaded metadata for ${Object.keys(questionMetadata).length} questions`);
+            } catch (error) {
+                console.error('Error loading metadata:', error);
+            }
+        }
+
+        // Switch between filter paths (Region-first vs Time-first)
+        function setFilterPath(path) {
+            activeFilters.path = path;
+
+            // Update button states
+            document.getElementById('filterByRegion').classList.toggle('active', path === 'region');
+            document.getElementById('filterByTime').classList.toggle('active', path === 'time');
+
+            // Show/hide appropriate filter sections
+            document.getElementById('regionFilterSection').style.display = path === 'region' ? 'block' : 'none';
+            document.getElementById('timeFilterSection').style.display = path === 'time' ? 'block' : 'none';
+
+            // Reset secondary filter
+            document.getElementById('secondaryFilterSection').style.display = 'none';
+            activeFilters.secondary = 'all';
+
+            // Update display
+            updateFilterDisplay();
+        }
+
+        // Handle primary filter change (region or time period)
+        function onPrimaryFilterChange() {
+            const path = activeFilters.path;
+
+            if (path === 'region') {
+                activeFilters.region = document.getElementById('regionFilter').value;
+                updateSecondaryFilter('time');
+            } else {
+                activeFilters.timePeriod = document.getElementById('timeFilter').value;
+                updateSecondaryFilter('region');
+            }
+
+            updateFilterDisplay();
+        }
+
+        // Update secondary filter options based on primary selection
+        function updateSecondaryFilter(type) {
+            const secondarySection = document.getElementById('secondaryFilterSection');
+            const secondarySelect = document.getElementById('secondaryFilter');
+            const secondaryLabel = document.getElementById('secondaryFilterLabel');
+
+            // Get relevant options based on selected primary filter
+            const options = getSecondaryOptions(type);
+
+            if (options.length > 0) {
+                // Show secondary filter
+                secondarySection.style.display = 'block';
+                secondaryLabel.textContent = type === 'time' ? 'Time Period' : 'Region';
+
+                // Populate options
+                secondarySelect.innerHTML = '<option value="all">All</option>';
+                options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.textContent = opt;
+                    secondarySelect.appendChild(option);
+                });
+            } else {
+                secondarySection.style.display = 'none';
+            }
+        }
+
+        // Get available secondary options based on primary selection
+        function getSecondaryOptions(type) {
+            const allOptions = new Set();
+            const category = document.getElementById('category').value;
+
+            if (!questions[category]) return [];
+
+            questions[category].forEach(q => {
+                const meta = questionMetadata[q.id];
+                if (!meta) return;
+
+                // Check if question matches primary filter
+                let matches = false;
+                if (activeFilters.path === 'region' && activeFilters.region !== 'all') {
+                    matches = meta.regions.includes(activeFilters.region);
+                } else if (activeFilters.path === 'time' && activeFilters.timePeriod !== 'all') {
+                    matches = meta.time_periods.includes(activeFilters.timePeriod);
+                } else {
+                    matches = true;
+                }
+
+                if (matches) {
+                    if (type === 'time') {
+                        meta.time_periods.forEach(tp => allOptions.add(tp));
+                    } else {
+                        meta.regions.forEach(r => allOptions.add(r));
+                    }
+                }
+            });
+
+            return Array.from(allOptions).sort();
+        }
+
+        // Handle secondary filter change
+        function onSecondaryFilterChange() {
+            activeFilters.secondary = document.getElementById('secondaryFilter').value;
+            updateFilterDisplay();
+        }
+
+        // Handle answer type filter change
+        function onAnswerTypeFilterChange() {
+            activeFilters.answerType = document.getElementById('answerTypeFilter').value;
+            updateFilterDisplay();
+        }
+
+        // Get filtered questions based on active filters
+        function getFilteredQuestions(category) {
+            if (!questions[category]) return [];
+
+            return questions[category].filter(q => {
+                const meta = questionMetadata[q.id];
+                if (!meta) return true; // Include if no metadata
+
+                // Check region filter
+                if (activeFilters.path === 'region' && activeFilters.region !== 'all') {
+                    if (!meta.regions.includes(activeFilters.region)) return false;
+                }
+
+                // Check time period filter
+                if (activeFilters.path === 'time' && activeFilters.timePeriod !== 'all') {
+                    if (!meta.time_periods.includes(activeFilters.timePeriod)) return false;
+                }
+
+                // Check secondary filter
+                if (activeFilters.secondary !== 'all') {
+                    if (activeFilters.path === 'region') {
+                        // Secondary is time period
+                        if (!meta.time_periods.includes(activeFilters.secondary)) return false;
+                    } else {
+                        // Secondary is region
+                        if (!meta.regions.includes(activeFilters.secondary)) return false;
+                    }
+                }
+
+                // Check answer type filter
+                if (activeFilters.answerType !== 'all') {
+                    if (meta.answer_type !== activeFilters.answerType) return false;
+                }
+
+                return true;
+            });
+        }
+
+        // Update filter display (tags and count)
+        function updateFilterDisplay() {
+            const activeFiltersDiv = document.getElementById('activeFilters');
+            const activeFilterTags = document.getElementById('activeFilterTags');
+            const matchingCount = document.getElementById('matchingCount');
+
+            // Build active filter tags
+            const tags = [];
+
+            if (activeFilters.region !== 'all' && activeFilters.path === 'region') {
+                tags.push({ label: activeFilters.region, type: 'region' });
+            }
+            if (activeFilters.timePeriod !== 'all' && activeFilters.path === 'time') {
+                tags.push({ label: activeFilters.timePeriod, type: 'timePeriod' });
+            }
+            if (activeFilters.secondary !== 'all') {
+                tags.push({ label: activeFilters.secondary, type: 'secondary' });
+            }
+            if (activeFilters.answerType !== 'all') {
+                tags.push({ label: activeFilters.answerType, type: 'answerType' });
+            }
+
+            // Show/hide active filters section
+            activeFiltersDiv.style.display = tags.length > 0 ? 'block' : 'none';
+
+            // Render tags
+            activeFilterTags.innerHTML = tags.map(tag =>
+                `<div class="filter-tag">${tag.label} <span class="remove" onclick="removeFilter('${tag.type}')">×</span></div>`
+            ).join('');
+
+            // Update matching count
+            const category = document.getElementById('category').value;
+            const filtered = getFilteredQuestions(category);
+            const total = questions[category] ? questions[category].length : 0;
+
+            if (tags.length > 0) {
+                matchingCount.style.display = 'block';
+                matchingCount.className = 'matching-count';
+
+                if (filtered.length === 0) {
+                    matchingCount.className += ' error';
+                    matchingCount.textContent = 'No questions match these filters';
+                } else if (filtered.length < 10) {
+                    matchingCount.className += ' warning';
+                    matchingCount.textContent = `Only ${filtered.length} questions match`;
+                } else {
+                    matchingCount.textContent = `${filtered.length} of ${total} questions match`;
+                }
+            } else {
+                matchingCount.style.display = 'none';
+            }
+        }
+
+        // Remove a specific filter
+        function removeFilter(type) {
+            switch(type) {
+                case 'region':
+                    activeFilters.region = 'all';
+                    document.getElementById('regionFilter').value = 'all';
+                    break;
+                case 'timePeriod':
+                    activeFilters.timePeriod = 'all';
+                    document.getElementById('timeFilter').value = 'all';
+                    break;
+                case 'secondary':
+                    activeFilters.secondary = 'all';
+                    document.getElementById('secondaryFilter').value = 'all';
+                    break;
+                case 'answerType':
+                    activeFilters.answerType = 'all';
+                    document.getElementById('answerTypeFilter').value = 'all';
+                    break;
+            }
+            updateFilterDisplay();
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            activeFilters.region = 'all';
+            activeFilters.timePeriod = 'all';
+            activeFilters.secondary = 'all';
+            activeFilters.answerType = 'all';
+
+            document.getElementById('regionFilter').value = 'all';
+            document.getElementById('timeFilter').value = 'all';
+            document.getElementById('secondaryFilter').value = 'all';
+            document.getElementById('answerTypeFilter').value = 'all';
+
+            updateFilterDisplay();
+        }
+
+        // Add event listeners for filters
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('regionFilter')?.addEventListener('change', onPrimaryFilterChange);
+            document.getElementById('timeFilter')?.addEventListener('change', onPrimaryFilterChange);
+            document.getElementById('secondaryFilter')?.addEventListener('change', onSecondaryFilterChange);
+            document.getElementById('answerTypeFilter')?.addEventListener('change', onAnswerTypeFilterChange);
+        });
+
+        // ============================================
+        // END FILTER MANAGEMENT
+        // ============================================
+
         // Load questions from JSON
         async function loadQuestions() {
             try {
                 const response = await fetch('questions.json');
                 questions = await response.json();
 
-                // Assign unique IDs to all questions
-                // Format: P123 (Preliminary), Q45 (Quarterfinals), S67 (Semifinals), F89 (Finals)
-                const difficultyPrefixes = {
-                    'preliminary': 'P',
-                    'quarterfinals': 'Q',
-                    'semifinals': 'S',
-                    'finals': 'F'
-                };
+                // Questions now have permanent IDs in questions.json
+                // Format: P0, P1... (Preliminary), Q0, Q1... (Quarterfinals), etc.
+                // No need to generate IDs - they're already in the data
 
-                Object.keys(difficultyPrefixes).forEach(difficulty => {
-                    if (questions[difficulty] && Array.isArray(questions[difficulty])) {
-                        questions[difficulty].forEach((question, index) => {
-                            question.id = `${difficultyPrefixes[difficulty]}${index}`;
-                        });
-                    }
-                });
+                // Load metadata for filtering
+                await loadMetadata();
 
                 updateStats();
             } catch (error) {
@@ -2168,7 +2788,7 @@
 
         // Update speed display
         document.getElementById('speed').addEventListener('input', (e) => {
-            const speed = e.target.value;
+            const speed = 110 - e.target.value; // Invert: right = faster (lower ms), left = slower (higher ms)
             const label = getSpeedLabel(parseInt(speed));
             document.getElementById('speedValue').textContent = speed;
             document.getElementById('speedLabel').textContent = label;
@@ -2184,10 +2804,12 @@
             element.innerHTML = html.replace(/<span class="cursor"><\/span>/g, '');
         }
 
-        // Get random question from current category
+        // Get random question from current category (respecting active filters)
         function getRandomQuestion() {
             const category = document.getElementById('category').value;
-            const categoryQuestions = questions[category];
+
+            // Get filtered questions based on active filters
+            const categoryQuestions = getFilteredQuestions(category);
 
             if (!categoryQuestions || categoryQuestions.length === 0) {
                 return null;
@@ -2216,7 +2838,7 @@
                 if (isPaused) return;
 
                 // Check if enough time has passed based on current speed setting
-                const currentSpeed = parseInt(document.getElementById('speed').value);
+                const currentSpeed = 110 - parseInt(document.getElementById('speed').value); // Invert slider value
                 const now = Date.now();
 
                 if (now - lastCharTime < currentSpeed) {
@@ -2492,7 +3114,7 @@
             function addNextChar() {
                 if (isPaused) return;
 
-                const currentSpeed = parseInt(document.getElementById('speed').value);
+                const currentSpeed = 110 - parseInt(document.getElementById('speed').value); // Invert slider value
                 const now = Date.now();
 
                 if (now - lastCharTime < currentSpeed) {
@@ -2783,7 +3405,7 @@
             window.location.hash = page;
         }
 
-        function handleRouteChange() {
+        async function handleRouteChange() {
             const hash = window.location.hash.slice(1) || 'practice';
             const practiceContainer = document.getElementById('practiceContainer');
             const dashboardContainer = document.getElementById('dashboardContainer');
@@ -2795,6 +3417,8 @@
                 dashboardContainer.classList.add('active');
                 navTabs[0].classList.remove('active');
                 navTabs[1].classList.add('active');
+                // Load history before refreshing dashboard to avoid race condition
+                await loadUserHistory();
                 refreshDashboard();
             } else {
                 practiceContainer.classList.add('active');
@@ -2807,14 +3431,16 @@
         // Dashboard Functions
         function createRadialChart(container, percentage, size = 'normal') {
             const isSmall = size === 'small';
-            const radius = isSmall ? 48 : 88;
+            const svgSize = isSmall ? 100 : 150;
+            const center = svgSize / 2;
+            const radius = isSmall ? 40 : 66;
             const circumference = 2 * Math.PI * radius;
             const offset = circumference - (percentage / 100) * circumference;
 
             container.innerHTML = `
-                <svg width="${isSmall ? 120 : 200}" height="${isSmall ? 120 : 200}">
-                    <circle class="radial-chart-bg" cx="${isSmall ? 60 : 100}" cy="${isSmall ? 60 : 100}" r="${radius}"></circle>
-                    <circle class="radial-chart-progress correct" cx="${isSmall ? 60 : 100}" cy="${isSmall ? 60 : 100}" r="${radius}"
+                <svg width="${svgSize}" height="${svgSize}">
+                    <circle class="radial-chart-bg" cx="${center}" cy="${center}" r="${radius}"></circle>
+                    <circle class="radial-chart-progress correct" cx="${center}" cy="${center}" r="${radius}"
                             stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>
                 </svg>
                 <div class="radial-chart-text">
@@ -2877,6 +3503,86 @@
             return stats;
         }
 
+        function calculateCategoryStats() {
+            const regionStats = {};
+            const answerTypeStats = {};
+
+            questionHistory.forEach((entry) => {
+                const meta = questionMetadata[entry.id];
+                if (!meta) return;
+
+                // Process regions
+                meta.regions.forEach(region => {
+                    if (!regionStats[region]) {
+                        regionStats[region] = { total: 0, correct: 0 };
+                    }
+                    regionStats[region].total++;
+                    if (entry.status === 'correct') {
+                        regionStats[region].correct++;
+                    }
+                });
+
+                // Process answer type
+                const answerType = meta.answer_type;
+                if (answerType) {
+                    if (!answerTypeStats[answerType]) {
+                        answerTypeStats[answerType] = { total: 0, correct: 0 };
+                    }
+                    answerTypeStats[answerType].total++;
+                    if (entry.status === 'correct') {
+                        answerTypeStats[answerType].correct++;
+                    }
+                }
+            });
+
+            return { regionStats, answerTypeStats };
+        }
+
+        function updateCategoryStatsDisplay(answerTypeStats) {
+            const answerTypeStatsDiv = document.getElementById('answerTypeStats');
+
+            // All possible answer types
+            const allAnswerTypes = [
+                "People & Biography",
+                "Events & Incidents",
+                "Places & Geography",
+                "Works & Documents",
+                "Groups & Institutions",
+                "Concepts & Ideas"
+            ];
+
+            // Helper function to create stat item HTML
+            function createStatItem(label, total, correct) {
+                const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+                return `
+                    <div class="category-stat-item">
+                        <div class="category-stat-label" title="${label}">${label}</div>
+                        <div class="category-stat-bar-container">
+                            <div class="category-stat-bar" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="category-stat-value">${percentage}%</div>
+                        <div class="category-stat-count">(${total})</div>
+                    </div>
+                `;
+            }
+
+            // Generate answer type stats HTML for ALL types
+            let answerTypeHTML = '';
+            allAnswerTypes.forEach(type => {
+                const stats = answerTypeStats[type] || { total: 0, correct: 0 };
+                // Abbreviate answer type names
+                let displayName = type;
+                if (type === 'People & Biography') displayName = 'People & Bio';
+                if (type === 'Events & Incidents') displayName = 'Events';
+                if (type === 'Places & Geography') displayName = 'Places & Geo';
+                if (type === 'Works & Documents') displayName = 'Works & Docs';
+                if (type === 'Groups & Institutions') displayName = 'Groups & Inst';
+                if (type === 'Concepts & Ideas') displayName = 'Concepts';
+                answerTypeHTML += createStatItem(displayName, stats.total, stats.correct);
+            });
+            answerTypeStatsDiv.innerHTML = answerTypeHTML;
+        }
+
         function refreshDashboard() {
             const dashboardContainer = document.getElementById('dashboardContainer');
 
@@ -2902,9 +3608,10 @@
             document.getElementById('correctCount').textContent = stats.correct;
             document.getElementById('incorrectCount').textContent = stats.incorrect;
             document.getElementById('skippedCount').textContent = stats.skipped;
-            document.getElementById('currentStreak').textContent = stats.currentStreak;
-            document.getElementById('bestStreak').textContent = stats.bestStreak;
-            document.getElementById('totalAttempted').textContent = stats.total;
+
+            // Update category stats
+            const categoryStats = calculateCategoryStats();
+            updateCategoryStatsDisplay(categoryStats.answerTypeStats);
 
             // Update difficulty charts
             const difficultyCharts = document.getElementById('difficultyCharts');
@@ -2974,32 +3681,23 @@
                         </div>
                     </div>
 
-                    <!-- Performance Metrics Card -->
+                    <!-- Performance by Answer Type Card -->
                     <div class="dashboard-card">
-                        <div class="card-header">Performance Metrics</div>
-                        <div class="card-body">
-                            <div class="stat-item" style="margin-bottom: 20px;">
-                                <div class="stat-value" id="currentStreak">0</div>
-                                <div class="stat-label">Current Streak</div>
-                            </div>
-                            <div class="stat-item" style="margin-bottom: 20px;">
-                                <div class="stat-value" id="bestStreak">0</div>
-                                <div class="stat-label">Best Streak</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value" id="totalAttempted">0</div>
-                                <div class="stat-label">Total Attempted</div>
+                        <div class="card-header">Performance by Answer Type</div>
+                        <div class="card-body" style="align-items: stretch;">
+                            <div id="answerTypeStats" class="category-stats">
+                                <!-- Answer type stats will be generated by JS -->
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Performance by Difficulty -->
-                <div class="dashboard-card">
-                    <div class="card-header">Performance by Difficulty</div>
-                    <div class="card-body">
-                        <div class="difficulty-charts" id="difficultyCharts">
-                            <!-- Difficulty charts will be generated by JS -->
+                    <!-- Performance by Difficulty -->
+                    <div class="dashboard-card">
+                        <div class="card-header">Performance by Difficulty</div>
+                        <div class="card-body">
+                            <div class="difficulty-charts" id="difficultyCharts">
+                                <!-- Difficulty charts will be generated by JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3067,13 +3765,16 @@
             }
 
             let tableHTML = `
-                <table class="history-table">
+                <table class="history-table" id="historyTable">
                     <thead>
                         <tr>
-                            <th>Question ID</th>
-                            <th>Status</th>
-                            <th>Difficulty</th>
-                            <th>Date</th>
+                            <th style="min-width: 80px;">Question ID<div class="resizer"></div></th>
+                            <th style="min-width: 100px;">Status<div class="resizer"></div></th>
+                            <th style="min-width: 100px;">Difficulty<div class="resizer"></div></th>
+                            <th style="min-width: 120px;">Region<div class="resizer"></div></th>
+                            <th style="min-width: 150px;">Time Period<div class="resizer"></div></th>
+                            <th style="min-width: 100px;">Type<div class="resizer"></div></th>
+                            <th style="min-width: 80px;">Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -3084,6 +3785,12 @@
                 const difficulty = getDifficultyName(entry.id.charAt(0));
                 const statusIcon = entry.status === 'correct' ? '✓' : (entry.status === 'incorrect' ? '✗' : '—');
 
+                // Get category information from metadata
+                const meta = questionMetadata[entry.id];
+                const region = meta ? (meta.regions[0] || 'N/A') : 'N/A';
+                const timePeriod = meta ? (meta.time_periods[0] || 'N/A') : 'N/A';
+                const answerType = meta ? (meta.answer_type || 'N/A') : 'N/A';
+
                 tableHTML += `
                     <tr class="${entry.status}" onclick="openQuestionDetail('${entry.id}')">
                         <td><strong>${entry.id}</strong></td>
@@ -3093,6 +3800,9 @@
                             </span>
                         </td>
                         <td>${difficulty}</td>
+                        <td>${region}</td>
+                        <td>${timePeriod}</td>
+                        <td>${answerType}</td>
                         <td>${date}</td>
                     </tr>
                 `;
@@ -3100,6 +3810,64 @@
 
             tableHTML += '</tbody></table>';
             wrapper.innerHTML = tableHTML;
+
+            // Initialize column resizing after table is rendered
+            initColumnResizing();
+        }
+
+        // Column resizing functionality
+        function initColumnResizing() {
+            const table = document.getElementById('historyTable');
+            if (!table) return;
+
+            const resizers = table.querySelectorAll('.resizer');
+            let currentResizer = null;
+            let currentTh = null;
+            let startX = 0;
+            let startWidth = 0;
+
+            resizers.forEach(resizer => {
+                resizer.addEventListener('mousedown', (e) => {
+                    currentResizer = resizer;
+                    currentTh = resizer.parentElement;
+                    startX = e.pageX;
+                    startWidth = currentTh.offsetWidth;
+
+                    document.addEventListener('mousemove', handleMouseMove);
+                    document.addEventListener('mouseup', handleMouseUp);
+
+                    // Prevent text selection while resizing
+                    e.preventDefault();
+                });
+            });
+
+            function handleMouseMove(e) {
+                if (!currentTh) return;
+
+                const width = startWidth + (e.pageX - startX);
+                const minWidth = parseInt(currentTh.style.minWidth) || 50;
+
+                if (width >= minWidth) {
+                    currentTh.style.width = width + 'px';
+
+                    // Also set width on corresponding cells in the column
+                    const columnIndex = Array.from(currentTh.parentElement.children).indexOf(currentTh);
+                    const rows = table.querySelectorAll('tbody tr');
+                    rows.forEach(row => {
+                        const cell = row.children[columnIndex];
+                        if (cell) {
+                            cell.style.width = width + 'px';
+                        }
+                    });
+                }
+            }
+
+            function handleMouseUp() {
+                currentResizer = null;
+                currentTh = null;
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            }
         }
 
         function getDifficultyName(key) {
@@ -3110,6 +3878,13 @@
         function openQuestionDetail(questionId) {
             const entry = questionHistory.find(e => e.id === questionId);
             if (!entry) return;
+
+            // Get category information
+            const meta = questionMetadata[questionId];
+            const region = meta ? meta.regions.join(', ') : 'N/A';
+            const timePeriod = meta ? meta.time_periods.join(', ') : 'N/A';
+            const answerType = meta ? meta.answer_type : 'N/A';
+            const themes = meta ? meta.subject_themes.join(', ') : 'N/A';
 
             const newWindow = window.open('', '_blank');
             newWindow.document.write(`
@@ -3128,7 +3903,10 @@
                         h1 { color: #4a90e2; }
                         .question { font-size: 1.1em; margin: 20px 0; }
                         .answer { background: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0; }
+                        .categories { background: #e3f2fd; padding: 15px; border-radius: 4px; margin: 20px 0; }
                         .label { font-weight: 600; color: #666; margin-bottom: 10px; }
+                        .category-item { margin: 8px 0; }
+                        .category-label { font-weight: 600; color: #1976d2; display: inline-block; width: 120px; }
                     </style>
                 </head>
                 <body>
@@ -3137,6 +3915,13 @@
                     <div class="question">${entry.question}</div>
                     <div class="label">Answer:</div>
                     <div class="answer">${entry.answer}</div>
+                    <div class="label">Categories:</div>
+                    <div class="categories">
+                        <div class="category-item"><span class="category-label">Region:</span> ${region}</div>
+                        <div class="category-item"><span class="category-label">Time Period:</span> ${timePeriod}</div>
+                        <div class="category-item"><span class="category-label">Answer Type:</span> ${answerType}</div>
+                        <div class="category-item"><span class="category-label">Themes:</span> ${themes}</div>
+                    </div>
                 </body>
                 </html>
             `);
@@ -3167,7 +3952,7 @@
                 return;
             }
 
-            let csv = 'Question ID,Status,Difficulty,Date,Question,Answer\n';
+            let csv = 'Question ID,Status,Difficulty,Region,Time Period,Type,Date,Question,Answer\n';
 
             questionHistory.forEach(entry => {
                 const date = new Date(entry.timestamp).toLocaleDateString();
@@ -3175,7 +3960,13 @@
                 const question = entry.question.replace(/"/g, '""').replace(/<[^>]*>/g, '');
                 const answer = entry.answer.replace(/"/g, '""').replace(/<[^>]*>/g, '');
 
-                csv += `"${entry.id}","${entry.status}","${difficulty}","${date}","${question}","${answer}"\n`;
+                // Get category information
+                const meta = questionMetadata[entry.id];
+                const region = meta ? (meta.regions.join('; ') || 'N/A') : 'N/A';
+                const timePeriod = meta ? (meta.time_periods.join('; ') || 'N/A') : 'N/A';
+                const answerType = meta ? (meta.answer_type || 'N/A') : 'N/A';
+
+                csv += `"${entry.id}","${entry.status}","${difficulty}","${region}","${timePeriod}","${answerType}","${date}","${question}","${answer}"\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv' });
