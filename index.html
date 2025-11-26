@@ -5220,12 +5220,8 @@
         // Render compact level badge for header/leaderboard
         function renderCompactLevelBadge(xp) {
             const progress = calculateLevelProgress(xp);
-            const tierClass = progress.tier.name.toLowerCase();
 
-            return `<div class="level-badge-compact tier-${tierClass}">
-                ${generateTierShield(progress.level, 'small', true)}
-                <span class="compact-progress">${progress.progress}/${progress.needed}</span>
-            </div>`;
+            return generateTierShield(progress.level, 'small', true);
         }
 
         // Render streak display
