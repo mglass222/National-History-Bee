@@ -1559,103 +1559,6 @@
             color: var(--text-secondary);
         }
 
-        /* Daily Challenges */
-        .daily-challenges {
-            background: var(--bg-tertiary);
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-
-        .challenges-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .challenges-timer {
-            font-size: 0.8em;
-            color: var(--text-secondary);
-            font-weight: normal;
-        }
-
-        .challenge-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--bg-primary);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .challenge-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .challenge-item.completed {
-            border-color: var(--success-green);
-            background: rgba(39, 174, 96, 0.05);
-        }
-
-        .challenge-icon {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: var(--bg-tertiary);
-            font-size: 1em;
-        }
-
-        .challenge-item.completed .challenge-icon {
-            background: var(--success-green);
-            color: white;
-        }
-
-        .challenge-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .challenge-desc {
-            font-size: 0.9em;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-
-        .challenge-progress {
-            font-size: 0.8em;
-            color: var(--text-secondary);
-        }
-
-        .challenge-progress-bar {
-            height: 4px;
-            background: var(--border-color);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-bottom: 4px;
-        }
-
-        .challenge-progress-bar .fill {
-            height: 100%;
-            background: var(--primary-blue);
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-
-        .challenge-reward {
-            font-weight: 600;
-            color: var(--success-green);
-            font-size: 0.85em;
-            white-space: nowrap;
-        }
-
         /* XP Display in Settings Panel */
         .xp-display {
             background: var(--bg-tertiary);
@@ -2351,7 +2254,6 @@
                     <button class="nav-tab active" onclick="navigateTo('practice')">Practice</button>
                     <button class="nav-tab" onclick="navigateTo('dashboard')">Dashboard</button>
                     <button class="nav-tab" onclick="navigateTo('profile')">Profile</button>
-                    <button class="nav-tab" onclick="navigateTo('challenges')">Challenges</button>
                     <button class="nav-tab" onclick="navigateTo('leaderboard')">Leaderboard</button>
                 </nav>
             </div>
@@ -2786,21 +2688,6 @@
                         </div>
 
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Challenges Container -->
-    <div id="challengesContainer" class="dashboard-container">
-        <div class="dashboard-header">
-            <h1 class="dashboard-title">Daily Challenges</h1>
-            <p class="dashboard-subtitle">Complete challenges to earn bonus XP</p>
-        </div>
-        <div class="dashboard-card">
-            <div class="card-body">
-                <div id="challengesContent" class="daily-challenges">
-                    <!-- Will be populated by JS -->
                 </div>
             </div>
         </div>
@@ -4410,7 +4297,6 @@
             const practiceContainer = document.getElementById('practiceContainer');
             const dashboardContainer = document.getElementById('dashboardContainer');
             const profileContainer = document.getElementById('profileContainer');
-            const challengesContainer = document.getElementById('challengesContainer');
             const leaderboardContainer = document.getElementById('leaderboardContainer');
             const navTabs = document.querySelectorAll('.nav-tab');
 
@@ -4419,13 +4305,11 @@
                 practiceContainer.classList.remove('active');
                 dashboardContainer.classList.add('active');
                 profileContainer.classList.remove('active');
-                challengesContainer.classList.remove('active');
                 leaderboardContainer.classList.remove('active');
                 navTabs[0].classList.remove('active');
                 navTabs[1].classList.add('active');
                 navTabs[2].classList.remove('active');
                 navTabs[3].classList.remove('active');
-                navTabs[4].classList.remove('active');
 
                 // Check if user is logged in and verified
                 if (!currentUser || !currentUser.emailVerified) {
@@ -4449,49 +4333,31 @@
                 practiceContainer.classList.remove('active');
                 dashboardContainer.classList.remove('active');
                 profileContainer.classList.add('active');
-                challengesContainer.classList.remove('active');
                 leaderboardContainer.classList.remove('active');
                 navTabs[0].classList.remove('active');
                 navTabs[1].classList.remove('active');
                 navTabs[2].classList.add('active');
                 navTabs[3].classList.remove('active');
-                navTabs[4].classList.remove('active');
                 await loadProfile();
-            } else if (hash === 'challenges') {
-                practiceContainer.classList.remove('active');
-                dashboardContainer.classList.remove('active');
-                profileContainer.classList.remove('active');
-                challengesContainer.classList.add('active');
-                leaderboardContainer.classList.remove('active');
-                navTabs[0].classList.remove('active');
-                navTabs[1].classList.remove('active');
-                navTabs[2].classList.remove('active');
-                navTabs[3].classList.add('active');
-                navTabs[4].classList.remove('active');
-                await loadChallengesPage();
             } else if (hash === 'leaderboard') {
                 practiceContainer.classList.remove('active');
                 dashboardContainer.classList.remove('active');
                 profileContainer.classList.remove('active');
-                challengesContainer.classList.remove('active');
                 leaderboardContainer.classList.add('active');
                 navTabs[0].classList.remove('active');
                 navTabs[1].classList.remove('active');
                 navTabs[2].classList.remove('active');
-                navTabs[3].classList.remove('active');
-                navTabs[4].classList.add('active');
+                navTabs[3].classList.add('active');
                 await loadLeaderboard();
             } else {
                 practiceContainer.classList.add('active');
                 dashboardContainer.classList.remove('active');
                 profileContainer.classList.remove('active');
-                challengesContainer.classList.remove('active');
                 leaderboardContainer.classList.remove('active');
                 navTabs[0].classList.add('active');
                 navTabs[1].classList.remove('active');
                 navTabs[2].classList.remove('active');
                 navTabs[3].classList.remove('active');
-                navTabs[4].classList.remove('active');
                 // Check profile warning status when returning to practice tab
                 checkAndShowProfileWarning();
             }
@@ -5400,306 +5266,6 @@
             if (notification) notification.classList.remove('show');
         }
 
-        // Daily Challenges Configuration
-        const DAILY_CHALLENGES = {
-            easy: [
-                { id: 'questions_10', description: 'Answer 10 questions correctly', target: 10, reward: 100, trackField: 'correctToday' }
-            ],
-            medium: [
-                { id: 'questions_25', description: 'Answer 25 questions correctly', target: 25, reward: 250, trackField: 'correctToday' }
-            ],
-            hard: [
-                { id: 'questions_50', description: 'Answer 50 questions correctly', target: 50, reward: 500, trackField: 'correctToday' }
-            ]
-        };
-
-        // Daily challenge state (in memory)
-        let dailyChallenges = null;
-        let dailyStats = {
-            correctToday: 0,
-            maxStreakToday: 0,
-            difficultiesUsed: new Set(),
-            correctP: 0,
-            correctQ: 0,
-            correctS: 0,
-            correctF: 0
-        };
-
-        function getTodayDateString() {
-            const now = new Date();
-            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-        }
-
-        function seededRandom(seed) {
-            const x = Math.sin(seed) * 10000;
-            return x - Math.floor(x);
-        }
-
-        function generateDailyChallenges(dateString) {
-            // Create a deterministic seed from the date
-            const seed = dateString.split('-').reduce((acc, val) => acc * 100 + parseInt(val), 0);
-
-            const easyIndex = Math.floor(seededRandom(seed) * DAILY_CHALLENGES.easy.length);
-            const mediumIndex = Math.floor(seededRandom(seed + 1) * DAILY_CHALLENGES.medium.length);
-            const hardIndex = Math.floor(seededRandom(seed + 2) * DAILY_CHALLENGES.hard.length);
-
-            return {
-                date: dateString,
-                challenges: [
-                    { ...DAILY_CHALLENGES.easy[easyIndex], type: 'easy', progress: 0, completed: false, claimed: false },
-                    { ...DAILY_CHALLENGES.medium[mediumIndex], type: 'medium', progress: 0, completed: false, claimed: false },
-                    { ...DAILY_CHALLENGES.hard[hardIndex], type: 'hard', progress: 0, completed: false, claimed: false }
-                ],
-                totalEarned: 0
-            };
-        }
-
-        async function loadOrGenerateDailyChallenges() {
-            if (!currentUser || !currentUser.emailVerified) return null;
-
-            const today = getTodayDateString();
-
-            // Check if we already have today's challenges in memory
-            if (dailyChallenges && dailyChallenges.date === today) {
-                return dailyChallenges;
-            }
-
-            try {
-                const { doc, getDoc, setDoc } = window.firebaseDbFunctions;
-                const challengeDocRef = doc(window.firebaseDb, 'users', currentUser.uid, 'dailyChallenges', today);
-                const challengeDoc = await getDoc(challengeDocRef);
-
-                if (challengeDoc.exists()) {
-                    dailyChallenges = challengeDoc.data();
-                    // Restore daily stats
-                    if (dailyChallenges.dailyStats) {
-                        dailyStats = {
-                            ...dailyChallenges.dailyStats,
-                            difficultiesUsed: new Set(dailyChallenges.dailyStats.difficultiesUsed || [])
-                        };
-                    }
-                } else {
-                    // Generate new challenges for today
-                    dailyChallenges = generateDailyChallenges(today);
-                    dailyStats = {
-                        correctToday: 0,
-                        maxStreakToday: 0,
-                        difficultiesUsed: new Set(),
-                        correctP: 0,
-                        correctQ: 0,
-                        correctS: 0,
-                        correctF: 0
-                    };
-                    await setDoc(challengeDocRef, {
-                        ...dailyChallenges,
-                        dailyStats: { ...dailyStats, difficultiesUsed: [] }
-                    });
-                }
-
-                return dailyChallenges;
-            } catch (error) {
-                console.error('Error loading daily challenges:', error);
-                // Fallback to local generation
-                dailyChallenges = generateDailyChallenges(today);
-                return dailyChallenges;
-            }
-        }
-
-        async function updateDailyChallengeProgress(difficulty, isCorrect) {
-            if (!currentUser || !currentUser.emailVerified || !dailyChallenges) return;
-
-            const today = getTodayDateString();
-            if (dailyChallenges.date !== today) {
-                await loadOrGenerateDailyChallenges();
-            }
-
-            if (!isCorrect) return;
-
-            // Update daily stats
-            dailyStats.correctToday++;
-            dailyStats.maxStreakToday = Math.max(dailyStats.maxStreakToday, userProfile?.currentStreak || 0);
-            dailyStats.difficultiesUsed.add(difficulty);
-
-            // Track per-difficulty
-            if (difficulty === 'P') dailyStats.correctP++;
-            else if (difficulty === 'Q') dailyStats.correctQ++;
-            else if (difficulty === 'S') dailyStats.correctS++;
-            else if (difficulty === 'F') dailyStats.correctF++;
-
-            // Update challenge progress
-            let challengeCompleted = false;
-            for (const challenge of dailyChallenges.challenges) {
-                if (challenge.completed) continue;
-
-                let currentProgress = 0;
-                switch (challenge.trackField) {
-                    case 'correctToday':
-                        currentProgress = dailyStats.correctToday;
-                        break;
-                    case 'maxStreakToday':
-                        currentProgress = dailyStats.maxStreakToday;
-                        break;
-                    case 'difficultiesUsed':
-                        currentProgress = dailyStats.difficultiesUsed.size;
-                        break;
-                    case 'correctP':
-                        currentProgress = dailyStats.correctP;
-                        break;
-                    case 'correctF':
-                        currentProgress = dailyStats.correctF;
-                        break;
-                }
-
-                challenge.progress = Math.min(currentProgress, challenge.target);
-
-                if (challenge.progress >= challenge.target && !challenge.completed) {
-                    challenge.completed = true;
-                    challengeCompleted = true;
-                }
-            }
-
-            // Save to Firestore
-            try {
-                const { doc, setDoc } = window.firebaseDbFunctions;
-                const challengeDocRef = doc(window.firebaseDb, 'users', currentUser.uid, 'dailyChallenges', today);
-                await setDoc(challengeDocRef, {
-                    ...dailyChallenges,
-                    dailyStats: { ...dailyStats, difficultiesUsed: Array.from(dailyStats.difficultiesUsed) }
-                }, { merge: true });
-            } catch (error) {
-                console.error('Error saving daily challenge progress:', error);
-            }
-
-            // Update UI
-            renderDailyChallengesUI();
-
-            return challengeCompleted;
-        }
-
-        async function claimChallengeReward(challengeIndex) {
-            if (!currentUser || !currentUser.emailVerified || !dailyChallenges || !userProfile) return;
-
-            const challenge = dailyChallenges.challenges[challengeIndex];
-            if (!challenge || !challenge.completed || challenge.claimed) return;
-
-            // Mark as claimed
-            challenge.claimed = true;
-            dailyChallenges.totalEarned += challenge.reward;
-
-            // Award XP
-            const previousLevel = getLevelFromXP(userProfile.totalPoints || 0);
-
-            try {
-                const { doc, setDoc, updateDoc, increment } = window.firebaseDbFunctions;
-
-                // Update user profile with reward XP
-                const profileDocRef = doc(window.firebaseDb, 'users', currentUser.uid, 'profile', 'data');
-                await updateDoc(profileDocRef, {
-                    totalPoints: increment(challenge.reward)
-                });
-
-                // Update in memory
-                userProfile.totalPoints = (userProfile.totalPoints || 0) + challenge.reward;
-
-                // Save challenge state
-                const today = getTodayDateString();
-                const challengeDocRef = doc(window.firebaseDb, 'users', currentUser.uid, 'dailyChallenges', today);
-                await setDoc(challengeDocRef, dailyChallenges, { merge: true });
-
-                // Check for level up
-                const newLevel = getLevelFromXP(userProfile.totalPoints);
-                if (newLevel > previousLevel) {
-                    showLevelUpNotification(newLevel);
-                }
-
-                // Update UI
-                updateProfileUI();
-                renderDailyChallengesUI();
-
-            } catch (error) {
-                console.error('Error claiming challenge reward:', error);
-                challenge.claimed = false;
-                dailyChallenges.totalEarned -= challenge.reward;
-            }
-        }
-
-        function getTimeUntilReset() {
-            const now = new Date();
-            const tomorrow = new Date(now);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(0, 0, 0, 0);
-
-            const diff = tomorrow - now;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-            return `${hours}h ${minutes}m`;
-        }
-
-        function renderDailyChallengesUI(targetContainerId = 'challengesContent') {
-            const container = document.getElementById(targetContainerId);
-            if (!container || !dailyChallenges) return;
-
-            let html = `
-                <div class="challenges-header">
-                    <span>Daily Challenges</span>
-                    <span class="challenges-timer">Resets in ${getTimeUntilReset()}</span>
-                </div>
-            `;
-
-            for (let i = 0; i < dailyChallenges.challenges.length; i++) {
-                const challenge = dailyChallenges.challenges[i];
-                const isCompleted = challenge.completed;
-                const isClaimed = challenge.claimed;
-                const progressPct = Math.min(100, (challenge.progress / challenge.target) * 100);
-
-                const typeEmoji = challenge.type === 'easy' ? '🟢' : challenge.type === 'medium' ? '🟡' : '🔴';
-
-                html += `
-                    <div class="challenge-item ${isCompleted ? 'completed' : ''}">
-                        <div class="challenge-icon">${isClaimed ? '✓' : typeEmoji}</div>
-                        <div class="challenge-info">
-                            <div class="challenge-desc">${challenge.description}</div>
-                            ${!isCompleted ? `
-                                <div class="challenge-progress-bar">
-                                    <div class="fill" style="width: ${progressPct}%"></div>
-                                </div>
-                            ` : ''}
-                            <div class="challenge-progress">${isCompleted ? (isClaimed ? 'Claimed!' : 'Completed!') : `${challenge.progress}/${challenge.target}`}</div>
-                        </div>
-                        <div class="challenge-reward">
-                            ${isCompleted && !isClaimed ?
-                                `<button onclick="claimChallengeReward(${i})" style="background: var(--success-green); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">+${challenge.reward} XP</button>` :
-                                `+${challenge.reward} XP`
-                            }
-                        </div>
-                    </div>
-                `;
-            }
-
-            container.innerHTML = html;
-        }
-
-        // Load challenges page
-        async function loadChallengesPage() {
-            const container = document.getElementById('challengesContent');
-            if (!container) return;
-
-            if (!currentUser || !currentUser.emailVerified) {
-                container.innerHTML = `
-                    <div class="leaderboard-empty">Please log in and verify your email to view daily challenges</div>
-                `;
-                return;
-            }
-
-            // Load challenges if not already loaded
-            if (!dailyChallenges) {
-                await loadOrGenerateDailyChallenges();
-            }
-
-            renderDailyChallengesUI('challengesContent');
-        }
-
         // Update XP display in settings panel
         function updateXPDisplay() {
             const xpContainer = document.getElementById('xpDisplayContainer');
@@ -5792,10 +5358,6 @@
 
                 // Update UI with profile info
                 updateProfileUI();
-
-                // Load daily challenges
-                await loadOrGenerateDailyChallenges();
-                renderDailyChallengesUI();
             } catch (error) {
                 console.error('Error loading profile:', error);
             }
@@ -5946,7 +5508,6 @@
             if (currentTolerance < 80) {
                 // No XP earned when tolerance is below 80%
                 updateProfileUI();
-                await updateDailyChallengeProgress(difficulty, true);
                 return;
             }
 
@@ -5979,9 +5540,6 @@
 
                 // Update UI
                 updateProfileUI();
-
-                // Update daily challenge progress
-                await updateDailyChallengeProgress(difficulty, true);
 
                 // Only update leaderboards if user has a username
                 if (userProfile.username) {
