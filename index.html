@@ -5077,7 +5077,8 @@
 
         function calculateLevelProgress(xp) {
             const level = getLevelFromXP(xp);
-            const currentLevelXP = getXPForLevel(level);
+            // getXPForLevel returns XP needed to REACH that level, so level 1 starts at 0 XP
+            const currentLevelXP = level === 1 ? 0 : getXPForLevel(level);
             const nextLevelXP = getXPForLevel(level + 1);
             const progress = Math.max(0, xp - currentLevelXP);
             const needed = nextLevelXP - currentLevelXP;
@@ -5401,6 +5402,13 @@
                 const xpDisplayContainer = document.getElementById('xpDisplayContainer');
                 if (xpDisplayContainer) {
                     updateXPDisplay();
+                }
+
+                // Update profile rank display if visible
+                const rankDisplay = document.getElementById('profileRankDisplay');
+                if (rankDisplay) {
+                    const xp = userProfile.totalPoints || 0;
+                    rankDisplay.innerHTML = renderLevelBadge(xp, true);
                 }
             } else {
                 if (accountSettings) accountSettings.style.display = 'none';
