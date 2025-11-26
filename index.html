@@ -1534,6 +1534,12 @@
             color: var(--text-secondary);
         }
 
+        .compact-progress {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
         /* Streak Display */
         .streak-display {
             display: inline-flex;
@@ -5106,7 +5112,7 @@
         }
 
         // SVG Shield Generator - creates tier-appropriate shields
-        function generateTierShield(level, size = 'medium') {
+        function generateTierShield(level, size = 'medium', showLevelNumber = false) {
             const tier = getTierForLevel(level);
             const tierName = tier.name.toLowerCase();
             const color = tier.color;
@@ -5114,9 +5120,9 @@
 
             // Size dimensions
             const sizes = {
-                small: { width: 32, height: 38, fontSize: 10, strokeWidth: 1.5 },
-                medium: { width: 48, height: 58, fontSize: 14, strokeWidth: 2 },
-                large: { width: 80, height: 96, fontSize: 22, strokeWidth: 2.5 }
+                small: { width: 32, height: 38, fontSize: 12, strokeWidth: 1.5 },
+                medium: { width: 48, height: 58, fontSize: 16, strokeWidth: 2 },
+                large: { width: 80, height: 96, fontSize: 26, strokeWidth: 2.5 }
             };
             const s = sizes[size] || sizes.medium;
 
@@ -5178,6 +5184,10 @@
                     <path d="${shieldPath}" fill="none" stroke="${colorLight}" stroke-width="${s.strokeWidth * 0.5}" opacity="0.4" transform="scale(0.9) translate(${s.width * 0.055}, ${s.height * 0.055})"/>
                     <!-- Tier decorations -->
                     ${decorations}
+                    ${showLevelNumber ? `<!-- Level number -->
+                    <text x="${s.width/2}" y="${s.height * 0.58}" text-anchor="middle" dominant-baseline="middle"
+                        font-family="Arial, sans-serif" font-weight="bold" font-size="${s.fontSize}px"
+                        fill="white" stroke="${color}" stroke-width="0.5">${level}</text>` : ''}
                 </svg>
             </div>`;
         }
@@ -5213,8 +5223,8 @@
             const tierClass = progress.tier.name.toLowerCase();
 
             return `<div class="level-badge-compact tier-${tierClass}">
-                ${generateTierShield(progress.level, 'small')}
-                <span class="compact-title">${progress.title}</span>
+                ${generateTierShield(progress.level, 'small', true)}
+                <span class="compact-progress">${progress.progress}/${progress.needed}</span>
             </div>`;
         }
 
