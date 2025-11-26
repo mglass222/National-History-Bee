@@ -2443,7 +2443,7 @@
 
                 <!-- Answer Type Filter -->
                 <div class="filter-section">
-                    <label>Answer Type</label>
+                    <label>Question Type</label>
                     <select id="answerTypeFilter" class="filter-select">
                         <option value="all">All Types</option>
                         <option value="People & Biography">People & Biography</option>
@@ -5051,13 +5051,6 @@
                 91: 'Grandmaster VI', 92: 'Grandmaster VII', 93: 'Grandmaster VIII', 94: 'Grandmaster IX', 95: 'Grandmaster X',
                 96: 'Grandmaster XI', 97: 'Grandmaster XII', 98: 'Grandmaster XIII', 99: 'Grandmaster XIV', 100: 'Grandmaster XV'
             },
-            streakMultipliers: [
-                { minStreak: 20, multiplier: 2.0 },
-                { minStreak: 15, multiplier: 1.75 },
-                { minStreak: 10, multiplier: 1.5 },
-                { minStreak: 5, multiplier: 1.25 },
-                { minStreak: 3, multiplier: 1.1 }
-            ],
             dailyLoginBonuses: [
                 { days: 100, bonus: 2000 },
                 { days: 60, bonus: 1000 },
@@ -5120,18 +5113,6 @@
                 tier: getTierForLevel(level),
                 title: getRankTitle(level)
             };
-        }
-
-        function getStreakMultiplier(streak) {
-            for (const sm of RANK_CONFIG.streakMultipliers) {
-                if (streak >= sm.minStreak) return sm.multiplier;
-            }
-            return 1.0;
-        }
-
-        function calculateXPWithStreak(basePoints, streak) {
-            const multiplier = getStreakMultiplier(streak);
-            return Math.floor(basePoints * multiplier);
         }
 
         // SVG Shield Generator - creates tier-appropriate shields
@@ -5247,17 +5228,6 @@
             return generateTierShield(progress.level, 'small', true);
         }
 
-        // Render streak display
-        function renderStreakDisplay(streak) {
-            if (streak < 3) return '';
-            const multiplier = getStreakMultiplier(streak);
-            return `<div class="streak-display">
-                <span class="streak-fire">🔥</span>
-                <span class="streak-count">${streak}</span>
-                <span class="streak-multiplier">${multiplier}x</span>
-            </div>`;
-        }
-
         // Show level up notification
         function showLevelUpNotification(newLevel) {
             const tier = getTierForLevel(newLevel);
@@ -5307,8 +5277,6 @@
         // Update XP display in settings panel
         function updateXPDisplay() {
             const xpContainer = document.getElementById('xpDisplayContainer');
-            const streakContainer = document.getElementById('streakDisplayContainer');
-
             if (!userProfile || !xpContainer) return;
 
             const xp = userProfile.totalPoints || 0;
@@ -5335,16 +5303,6 @@
                     </div>
                 </div>
             `;
-
-            // Update streak display
-            if (streakContainer) {
-                const currentStreak = userProfile.currentStreak || 0;
-                if (currentStreak >= 3) {
-                    streakContainer.innerHTML = renderStreakDisplay(currentStreak);
-                } else {
-                    streakContainer.innerHTML = `<span style="font-size: 0.85em; color: var(--text-secondary);">Get a 3+ streak for bonus XP!</span>`;
-                }
-            }
         }
 
         function getLeaderboardPath(period) {
@@ -5556,10 +5514,8 @@
                 return;
             }
 
-            const basePoints = calculatePoints(difficulty);
-            if (basePoints === 0) return;
-
-            const xpEarned = calculateXPWithStreak(basePoints, userProfile.currentStreak);
+            const xpEarned = calculatePoints(difficulty);
+            if (xpEarned === 0) return;
 
             try {
                 const { doc, setDoc, updateDoc, increment } = window.firebaseDbFunctions;
@@ -5568,9 +5524,7 @@
                 const profileDocRef = doc(window.firebaseDb, 'users', currentUser.uid, 'profile', 'data');
                 await updateDoc(profileDocRef, {
                     totalPoints: increment(xpEarned),
-                    questionsAnswered: increment(1),
-                    currentStreak: userProfile.currentStreak,
-                    bestStreak: userProfile.bestStreak
+                    questionsAnswered: increment(1)
                 });
 
                 // Update userProfile in memory
