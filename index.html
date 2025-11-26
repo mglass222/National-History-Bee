@@ -2351,6 +2351,7 @@
                     <button class="nav-tab active" onclick="navigateTo('practice')">Practice</button>
                     <button class="nav-tab" onclick="navigateTo('dashboard')">Dashboard</button>
                     <button class="nav-tab" onclick="navigateTo('profile')">Profile</button>
+                    <button class="nav-tab" onclick="navigateTo('challenges')">Challenges</button>
                     <button class="nav-tab" onclick="navigateTo('leaderboard')">Leaderboard</button>
                 </nav>
             </div>
@@ -2574,27 +2575,7 @@
             <!-- Account Settings -->
             <div class="setting-group" id="accountSettings" style="display: none;">
                 <div class="setting-header">Account</div>
-
-                <!-- XP Display -->
-                <div id="xpDisplayContainer" class="xp-display">
-                    <!-- Will be populated by JS -->
-                </div>
-
-                <!-- Streak Display -->
-                <div id="streakDisplayContainer" style="margin-bottom: 12px; text-align: center;">
-                    <!-- Will be populated by JS -->
-                </div>
-
-                <div class="stats-info" id="usernameDisplay" style="margin-bottom: 10px;">
-                    <span>Username: <strong id="usernameText">-</strong></span>
-                </div>
-                <button class="btn-secondary" onclick="navigateTo('profile')" style="width: 100%; margin-bottom: 10px;">Edit Profile</button>
                 <button class="btn-secondary" onclick="calculateRetroactivePoints()" style="width: 100%;">Calculate Retroactive Points</button>
-
-                <!-- Daily Challenges -->
-                <div id="dailyChallengesContainer" class="daily-challenges">
-                    <!-- Will be populated by JS -->
-                </div>
             </div>
 
             <!-- Statistics -->
@@ -2841,6 +2822,21 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenges Container -->
+    <div id="challengesContainer" class="dashboard-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Daily Challenges</h1>
+            <p class="dashboard-subtitle">Complete challenges to earn bonus XP</p>
+        </div>
+        <div class="dashboard-card">
+            <div class="card-body">
+                <div id="challengesContent" class="daily-challenges">
+                    <!-- Will be populated by JS -->
                 </div>
             </div>
         </div>
@@ -4450,6 +4446,7 @@
             const practiceContainer = document.getElementById('practiceContainer');
             const dashboardContainer = document.getElementById('dashboardContainer');
             const profileContainer = document.getElementById('profileContainer');
+            const challengesContainer = document.getElementById('challengesContainer');
             const leaderboardContainer = document.getElementById('leaderboardContainer');
             const navTabs = document.querySelectorAll('.nav-tab');
 
@@ -4458,11 +4455,13 @@
                 practiceContainer.classList.remove('active');
                 dashboardContainer.classList.add('active');
                 profileContainer.classList.remove('active');
+                challengesContainer.classList.remove('active');
                 leaderboardContainer.classList.remove('active');
                 navTabs[0].classList.remove('active');
                 navTabs[1].classList.add('active');
                 navTabs[2].classList.remove('active');
                 navTabs[3].classList.remove('active');
+                navTabs[4].classList.remove('active');
 
                 // Check if user is logged in and verified
                 if (!currentUser || !currentUser.emailVerified) {
@@ -4486,31 +4485,49 @@
                 practiceContainer.classList.remove('active');
                 dashboardContainer.classList.remove('active');
                 profileContainer.classList.add('active');
+                challengesContainer.classList.remove('active');
                 leaderboardContainer.classList.remove('active');
                 navTabs[0].classList.remove('active');
                 navTabs[1].classList.remove('active');
                 navTabs[2].classList.add('active');
                 navTabs[3].classList.remove('active');
+                navTabs[4].classList.remove('active');
                 await loadProfile();
-            } else if (hash === 'leaderboard') {
+            } else if (hash === 'challenges') {
                 practiceContainer.classList.remove('active');
                 dashboardContainer.classList.remove('active');
                 profileContainer.classList.remove('active');
-                leaderboardContainer.classList.add('active');
+                challengesContainer.classList.add('active');
+                leaderboardContainer.classList.remove('active');
                 navTabs[0].classList.remove('active');
                 navTabs[1].classList.remove('active');
                 navTabs[2].classList.remove('active');
                 navTabs[3].classList.add('active');
+                navTabs[4].classList.remove('active');
+                await loadChallengesPage();
+            } else if (hash === 'leaderboard') {
+                practiceContainer.classList.remove('active');
+                dashboardContainer.classList.remove('active');
+                profileContainer.classList.remove('active');
+                challengesContainer.classList.remove('active');
+                leaderboardContainer.classList.add('active');
+                navTabs[0].classList.remove('active');
+                navTabs[1].classList.remove('active');
+                navTabs[2].classList.remove('active');
+                navTabs[3].classList.remove('active');
+                navTabs[4].classList.add('active');
                 await loadLeaderboard();
             } else {
                 practiceContainer.classList.add('active');
                 dashboardContainer.classList.remove('active');
                 profileContainer.classList.remove('active');
+                challengesContainer.classList.remove('active');
                 leaderboardContainer.classList.remove('active');
                 navTabs[0].classList.add('active');
                 navTabs[1].classList.remove('active');
                 navTabs[2].classList.remove('active');
                 navTabs[3].classList.remove('active');
+                navTabs[4].classList.remove('active');
                 // Check profile warning status when returning to practice tab
                 checkAndShowProfileWarning();
             }
@@ -5655,8 +5672,8 @@
             return `${hours}h ${minutes}m`;
         }
 
-        function renderDailyChallengesUI() {
-            const container = document.getElementById('dailyChallengesContainer');
+        function renderDailyChallengesUI(targetContainerId = 'challengesContent') {
+            const container = document.getElementById(targetContainerId);
             if (!container || !dailyChallenges) return;
 
             let html = `
@@ -5697,6 +5714,26 @@
             }
 
             container.innerHTML = html;
+        }
+
+        // Load challenges page
+        async function loadChallengesPage() {
+            const container = document.getElementById('challengesContent');
+            if (!container) return;
+
+            if (!currentUser || !currentUser.emailVerified) {
+                container.innerHTML = `
+                    <div class="leaderboard-empty">Please log in and verify your email to view daily challenges</div>
+                `;
+                return;
+            }
+
+            // Load challenges if not already loaded
+            if (!dailyChallenges) {
+                await loadOrGenerateDailyChallenges();
+            }
+
+            renderDailyChallengesUI('challengesContent');
         }
 
         // Update XP display in settings panel
@@ -5802,7 +5839,6 @@
 
         function updateProfileUI() {
             const accountSettings = document.getElementById('accountSettings');
-            const usernameText = document.getElementById('usernameText');
             const pointsDisplay = document.getElementById('pointsDisplay');
             const pointsText = document.getElementById('pointsText');
 
@@ -5811,10 +5847,9 @@
             const headerDisplayName = document.getElementById('headerDisplayName');
 
             if (userProfile) {
-                accountSettings.style.display = 'block';
-                usernameText.textContent = userProfile.username || '-';
-                pointsDisplay.style.display = 'block';
-                pointsText.textContent = userProfile.totalPoints || 0;
+                if (accountSettings) accountSettings.style.display = 'block';
+                if (pointsDisplay) pointsDisplay.style.display = 'block';
+                if (pointsText) pointsText.textContent = userProfile.totalPoints || 0;
 
                 // Update header with username if set
                 if (headerDisplayName) {
@@ -5834,8 +5869,8 @@
                     updateXPDisplay();
                 }
             } else {
-                accountSettings.style.display = 'none';
-                pointsDisplay.style.display = 'none';
+                if (accountSettings) accountSettings.style.display = 'none';
+                if (pointsDisplay) pointsDisplay.style.display = 'none';
                 if (headerLevelBadge) {
                     headerLevelBadge.style.display = 'none';
                 }
