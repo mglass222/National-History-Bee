@@ -2475,6 +2475,9 @@
                 <div class="speed-display">
                     <span id="toleranceValue">80</span>% (forgives minor typos)
                 </div>
+                <div id="toleranceWarning" style="color: #e74c3c; font-size: 0.85em; margin-top: 5px; display: none;">
+                    ⚠️ No XP earned below 80%
+                </div>
             </div>
 
             <!-- Question Filters -->
@@ -3351,12 +3354,15 @@
             const tolerance = parseInt(e.target.value);
             document.getElementById('toleranceValue').textContent = tolerance;
             localStorage.setItem('answerTolerance', tolerance);
+            // Show/hide warning
+            document.getElementById('toleranceWarning').style.display = tolerance < 80 ? 'block' : 'none';
         });
 
         // Load saved answer tolerance
         const savedTolerance = localStorage.getItem('answerTolerance') || '80';
         document.getElementById('answerTolerance').value = savedTolerance;
         document.getElementById('toleranceValue').textContent = savedTolerance;
+        document.getElementById('toleranceWarning').style.display = parseInt(savedTolerance) < 80 ? 'block' : 'none';
 
         // Device Detection (Mobile/Tablet vs Desktop)
         function detectDeviceType() {
@@ -5936,7 +5942,15 @@
                 return;
             }
 
-            // Calculate XP with streak multiplier
+            // Calculate XP with streak multiplier (only if tolerance >= 80%)
+            const currentTolerance = parseInt(localStorage.getItem('answerTolerance') || '80');
+            if (currentTolerance < 80) {
+                // No XP earned when tolerance is below 80%
+                updateProfileUI();
+                await updateDailyChallengeProgress(difficulty, true);
+                return;
+            }
+
             const basePoints = calculatePoints(difficulty);
             if (basePoints === 0) return;
 
