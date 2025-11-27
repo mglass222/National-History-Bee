@@ -315,6 +315,17 @@
             opacity: 1;
         }
 
+        .question-type-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
         .clear-filters-btn {
             width: 100%;
             padding: 6px 12px;
@@ -3936,6 +3947,13 @@
                 ? '<span class="correct" style="font-size: 1.3em;">✓</span>'
                 : '<span class="incorrect" style="font-size: 1.3em;">✗</span>';
 
+            // Get question type from metadata
+            const meta = questionMetadata[currentQuestion.id];
+            const questionType = meta ? meta.answer_type : null;
+            const questionTypeTag = questionType
+                ? `<div><span class="question-type-tag">${questionType}</span></div>`
+                : '';
+
             answerText.innerHTML = `
                 <div style="margin-bottom: 15px;">
                     <strong>Your Answer:</strong> ${userAnswer} ${indicator}
@@ -3943,6 +3961,7 @@
                 <div>
                     <strong>Correct Answer:</strong> ${correctAnswer}
                 </div>
+                ${questionTypeTag}
             `;
 
             currentSection = 'answer';
@@ -4078,7 +4097,14 @@
             currentSection = 'answer';
             isPaused = false;
 
-            document.getElementById('answerText').innerHTML = currentQuestion.answer;
+            // Get question type from metadata
+            const meta = questionMetadata[currentQuestion.id];
+            const questionType = meta ? meta.answer_type : null;
+            const questionTypeTag = questionType
+                ? `<div><span class="question-type-tag">${questionType}</span></div>`
+                : '';
+
+            document.getElementById('answerText').innerHTML = currentQuestion.answer + questionTypeTag;
             updateBuzzerVisibility();
         }
 
