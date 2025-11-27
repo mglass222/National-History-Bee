@@ -268,98 +268,6 @@
             border-color: var(--primary-blue);
         }
 
-        .multiselect-container {
-            position: relative;
-        }
-
-        .multiselect-button {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 3px;
-            font-size: 0.9em;
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            font-family: inherit;
-            transition: all 0.3s;
-            cursor: pointer;
-            text-align: left;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .multiselect-button:hover {
-            border-color: var(--primary-blue);
-        }
-
-        .multiselect-button::after {
-            content: '▼';
-            font-size: 0.7em;
-            color: var(--text-secondary);
-        }
-
-        .multiselect-dropdown {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-top: none;
-            border-radius: 0 0 3px 3px;
-            max-height: 250px;
-            overflow-y: auto;
-            z-index: 100;
-        }
-
-        .multiselect-dropdown.open {
-            display: block;
-        }
-
-        .multiselect-option {
-            padding: 8px 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9em;
-        }
-
-        .multiselect-option:hover {
-            background: var(--bg-secondary);
-        }
-
-        .multiselect-option input[type="checkbox"] {
-            cursor: pointer;
-        }
-
-        .multiselect-actions {
-            display: flex;
-            gap: 8px;
-            padding: 8px 12px;
-            border-top: 1px solid var(--border-color);
-            background: var(--bg-secondary);
-        }
-
-        .multiselect-actions button {
-            flex: 1;
-            padding: 4px 8px;
-            font-size: 0.8em;
-            border: 1px solid var(--border-color);
-            border-radius: 3px;
-            cursor: pointer;
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        .multiselect-actions button:hover {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-
         .active-filters {
             margin-top: 16px;
             padding: 12px;
@@ -2544,59 +2452,25 @@
                     </select>
                 </div>
 
-                <!-- Answer Type Filter (Multi-select) -->
+                <!-- Answer Type Filter -->
                 <div class="filter-section">
                     <label>Question Type</label>
-                    <div class="multiselect-container" id="questionTypeMultiselect">
-                        <button type="button" class="multiselect-button" id="questionTypeButton">
-                            <span>All Types</span>
-                        </button>
-                        <div class="multiselect-dropdown" id="questionTypeDropdown">
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="People & Biography"> People & Biography
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Events (Wars, Battles, Revolutions)"> Events (Wars, Battles, Revolutions)
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Political History & Diplomacy"> Political History & Diplomacy
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Economic History & Trade"> Economic History & Trade
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Social History & Daily Life"> Social History & Daily Life
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Cultural History (Art, Literature, Music)"> Cultural History (Art, Literature, Music)
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Religion & Mythology"> Religion & Mythology
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Science, Technology & Innovation"> Science, Technology & Innovation
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Geography & Environment"> Geography & Environment
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Places, Cities & Civilizations"> Places, Cities & Civilizations
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Groups, Organizations & Institutions"> Groups, Organizations & Institutions
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Documents, Laws & Treaties"> Documents, Laws & Treaties
-                            </label>
-                            <label class="multiselect-option">
-                                <input type="checkbox" value="Ideas, Ideologies & Philosophies"> Ideas, Ideologies & Philosophies
-                            </label>
-                            <div class="multiselect-actions">
-                                <button type="button" onclick="selectAllQuestionTypes()">Select All</button>
-                                <button type="button" onclick="clearAllQuestionTypes()">Clear All</button>
-                            </div>
-                        </div>
-                    </div>
+                    <select id="answerTypeFilter" class="filter-select">
+                        <option value="all">All Types</option>
+                        <option value="People & Biography">People & Biography</option>
+                        <option value="Events (Wars, Battles, Revolutions)">Events (Wars, Battles, Revolutions)</option>
+                        <option value="Political History & Diplomacy">Political History & Diplomacy</option>
+                        <option value="Economic History & Trade">Economic History & Trade</option>
+                        <option value="Social History & Daily Life">Social History & Daily Life</option>
+                        <option value="Cultural History (Art, Literature, Music)">Cultural History (Art, Literature, Music)</option>
+                        <option value="Religion & Mythology">Religion & Mythology</option>
+                        <option value="Science, Technology & Innovation">Science, Technology & Innovation</option>
+                        <option value="Geography & Environment">Geography & Environment</option>
+                        <option value="Places, Cities & Civilizations">Places, Cities & Civilizations</option>
+                        <option value="Groups, Organizations & Institutions">Groups, Organizations & Institutions</option>
+                        <option value="Documents, Laws & Treaties">Documents, Laws & Treaties</option>
+                        <option value="Ideas, Ideologies & Philosophies">Ideas, Ideologies & Philosophies</option>
+                    </select>
                 </div>
 
                 <!-- Active Filters Display -->
@@ -2995,7 +2869,7 @@
             region: 'all',
             timePeriod: 'all',
             secondary: 'all',
-            answerTypes: []  // Array for multi-select question types
+            answerType: 'all'
         };
 
         // Firebase Authentication Functions
@@ -3528,66 +3402,10 @@
             updateFilterDisplay();
         }
 
-        // Question Type Multi-select functions
-        function initQuestionTypeMultiselect() {
-            const button = document.getElementById('questionTypeButton');
-            const dropdown = document.getElementById('questionTypeDropdown');
-            const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
-
-            // Toggle dropdown
-            button.addEventListener('click', (e) => {
-                e.stopPropagation();
-                dropdown.classList.toggle('open');
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('#questionTypeMultiselect')) {
-                    dropdown.classList.remove('open');
-                }
-            });
-
-            // Handle checkbox changes
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', updateQuestionTypeFilter);
-            });
-        }
-
-        function updateQuestionTypeFilter() {
-            const checkboxes = document.querySelectorAll('#questionTypeDropdown input[type="checkbox"]');
-            const selected = [];
-            checkboxes.forEach(cb => {
-                if (cb.checked) selected.push(cb.value);
-            });
-            activeFilters.answerTypes = selected;
-            updateQuestionTypeButtonText();
+        // Handle answer type filter change
+        function onAnswerTypeFilterChange() {
+            activeFilters.answerType = document.getElementById('answerTypeFilter').value;
             updateFilterDisplay();
-        }
-
-        function updateQuestionTypeButtonText() {
-            const button = document.getElementById('questionTypeButton');
-            const span = button.querySelector('span');
-            const count = activeFilters.answerTypes.length;
-
-            if (count === 0) {
-                span.textContent = 'All Types';
-            } else if (count === 1) {
-                span.textContent = activeFilters.answerTypes[0];
-            } else {
-                span.textContent = `${count} types selected`;
-            }
-        }
-
-        function selectAllQuestionTypes() {
-            const checkboxes = document.querySelectorAll('#questionTypeDropdown input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = true);
-            updateQuestionTypeFilter();
-        }
-
-        function clearAllQuestionTypes() {
-            const checkboxes = document.querySelectorAll('#questionTypeDropdown input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = false);
-            updateQuestionTypeFilter();
         }
 
         // Get filtered questions based on active filters
@@ -3619,9 +3437,9 @@
                     }
                 }
 
-                // Check answer type filter (multi-select)
-                if (activeFilters.answerTypes.length > 0) {
-                    if (!activeFilters.answerTypes.includes(meta.answer_type)) return false;
+                // Check answer type filter
+                if (activeFilters.answerType !== 'all') {
+                    if (meta.answer_type !== activeFilters.answerType) return false;
                 }
 
                 return true;
@@ -3646,21 +3464,17 @@
             if (activeFilters.secondary !== 'all') {
                 tags.push({ label: activeFilters.secondary, type: 'secondary' });
             }
-            // Add tags for each selected question type
-            activeFilters.answerTypes.forEach(type => {
-                tags.push({ label: type, type: 'answerType', value: type });
-            });
+            if (activeFilters.answerType !== 'all') {
+                tags.push({ label: activeFilters.answerType, type: 'answerType' });
+            }
 
             // Show/hide active filters section
             activeFiltersDiv.style.display = tags.length > 0 ? 'block' : 'none';
 
             // Render tags
-            activeFilterTags.innerHTML = tags.map(tag => {
-                const removeCall = tag.value
-                    ? `removeFilter('${tag.type}', '${tag.value.replace(/'/g, "\\'")}')`
-                    : `removeFilter('${tag.type}')`;
-                return `<div class="filter-tag">${tag.label} <span class="remove" onclick="${removeCall}">×</span></div>`;
-            }).join('');
+            activeFilterTags.innerHTML = tags.map(tag =>
+                `<div class="filter-tag">${tag.label} <span class="remove" onclick="removeFilter('${tag.type}')">×</span></div>`
+            ).join('');
 
             // Update matching count
             const category = document.getElementById('category').value;
@@ -3686,7 +3500,7 @@
         }
 
         // Remove a specific filter
-        function removeFilter(type, value) {
+        function removeFilter(type) {
             switch(type) {
                 case 'region':
                     activeFilters.region = 'all';
@@ -3701,12 +3515,8 @@
                     document.getElementById('secondaryFilter').value = 'all';
                     break;
                 case 'answerType':
-                    // Remove specific question type from array
-                    activeFilters.answerTypes = activeFilters.answerTypes.filter(t => t !== value);
-                    // Uncheck the corresponding checkbox
-                    const checkbox = document.querySelector(`#questionTypeDropdown input[value="${value}"]`);
-                    if (checkbox) checkbox.checked = false;
-                    updateQuestionTypeButtonText();
+                    activeFilters.answerType = 'all';
+                    document.getElementById('answerTypeFilter').value = 'all';
                     break;
             }
             updateFilterDisplay();
@@ -3717,14 +3527,12 @@
             activeFilters.region = 'all';
             activeFilters.timePeriod = 'all';
             activeFilters.secondary = 'all';
-            activeFilters.answerTypes = [];
+            activeFilters.answerType = 'all';
 
             document.getElementById('regionFilter').value = 'all';
             document.getElementById('timeFilter').value = 'all';
             document.getElementById('secondaryFilter').value = 'all';
-
-            // Clear all question type checkboxes
-            clearAllQuestionTypes();
+            document.getElementById('answerTypeFilter').value = 'all';
 
             updateFilterDisplay();
         }
@@ -3734,8 +3542,7 @@
             document.getElementById('regionFilter')?.addEventListener('change', onPrimaryFilterChange);
             document.getElementById('timeFilter')?.addEventListener('change', onPrimaryFilterChange);
             document.getElementById('secondaryFilter')?.addEventListener('change', onSecondaryFilterChange);
-            // Initialize question type multi-select
-            initQuestionTypeMultiselect();
+            document.getElementById('answerTypeFilter')?.addEventListener('change', onAnswerTypeFilterChange);
         });
 
         // ============================================
