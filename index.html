@@ -268,14 +268,30 @@
             border-color: var(--primary-blue);
         }
 
-        .selected-types-container {
+        .question-types-indicator {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+        }
+
+        .question-types-label {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .question-types-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            margin-bottom: 8px;
         }
 
-        .selected-type-tag {
+        .question-type-filter-tag {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -287,7 +303,7 @@
             font-weight: 500;
         }
 
-        .selected-type-tag .remove-type {
+        .question-type-filter-tag .remove-type {
             cursor: pointer;
             font-weight: bold;
             opacity: 0.7;
@@ -296,7 +312,7 @@
             line-height: 1;
         }
 
-        .selected-type-tag .remove-type:hover {
+        .question-type-filter-tag .remove-type:hover {
             opacity: 1;
         }
 
@@ -2341,6 +2357,12 @@
                 <span class="difficulty-value" id="difficultyValue"></span>
             </div>
 
+            <!-- Selected Question Types Display -->
+            <div class="question-types-indicator" id="questionTypesIndicator" style="display: none;">
+                <span class="question-types-label">Showing Question Types:</span>
+                <span class="question-types-tags" id="questionTypesTags"></span>
+            </div>
+
             <!-- Question Display -->
             <div class="question-display">
                 <div class="question-text" id="questionText">
@@ -2487,7 +2509,6 @@
                 <!-- Answer Type Filter -->
                 <div class="filter-section">
                     <label>Question Type</label>
-                    <div id="selectedQuestionTypes" class="selected-types-container" style="display: none;"></div>
                     <select id="answerTypeFilter" class="filter-select">
                         <option value="all">All Types</option>
                         <option value="People & Biography">People & Biography</option>
@@ -3458,14 +3479,16 @@
         }
 
         function updateSelectedTypesDisplay() {
-            const container = document.getElementById('selectedQuestionTypes');
+            const indicator = document.getElementById('questionTypesIndicator');
+            const tagsContainer = document.getElementById('questionTypesTags');
+
             if (activeFilters.answerTypes.length === 0) {
-                container.style.display = 'none';
-                container.innerHTML = '';
+                indicator.style.display = 'none';
+                tagsContainer.innerHTML = '';
             } else {
-                container.style.display = 'flex';
-                container.innerHTML = activeFilters.answerTypes.map(type =>
-                    `<span class="selected-type-tag">${type}<span class="remove-type" onclick="removeQuestionType('${type.replace(/'/g, "\\'")}')">×</span></span>`
+                indicator.style.display = 'flex';
+                tagsContainer.innerHTML = activeFilters.answerTypes.map(type =>
+                    `<span class="question-type-filter-tag">${type}<span class="remove-type" onclick="removeQuestionType('${type.replace(/'/g, "\\'")}')">×</span></span>`
                 ).join('');
             }
         }
