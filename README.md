@@ -55,8 +55,8 @@ Built with vanilla HTML/CSS/JavaScript for maximum compatibility:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/mglass222/National-History-Bee.git
-   cd National-History-Bee
+   git clone https://github.com/mglass222/HBReader.git
+   cd HBReader
    ```
 
 2. Serve the files (Python 3):
