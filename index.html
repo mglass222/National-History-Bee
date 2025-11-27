@@ -268,6 +268,38 @@
             border-color: var(--primary-blue);
         }
 
+        .selected-types-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .selected-type-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .selected-type-tag .remove-type {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            font-size: 1.1em;
+            line-height: 1;
+        }
+
+        .selected-type-tag .remove-type:hover {
+            opacity: 1;
+        }
+
         .active-filters {
             margin-top: 16px;
             padding: 12px;
@@ -2455,6 +2487,7 @@
                 <!-- Answer Type Filter -->
                 <div class="filter-section">
                     <label>Question Type</label>
+                    <div id="selectedQuestionTypes" class="selected-types-container" style="display: none;"></div>
                     <select id="answerTypeFilter" class="filter-select">
                         <option value="all">All Types</option>
                         <option value="People & Biography">People & Biography</option>
@@ -2869,7 +2902,7 @@
             region: 'all',
             timePeriod: 'all',
             secondary: 'all',
-            answerType: 'all'
+            answerTypes: []  // Array for multi-select question types
         };
 
         // Firebase Authentication Functions
@@ -3404,7 +3437,42 @@
 
         // Handle answer type filter change
         function onAnswerTypeFilterChange() {
-            activeFilters.answerType = document.getElementById('answerTypeFilter').value;
+            const select = document.getElementById('answerTypeFilter');
+            const value = select.value;
+
+            // If "All Types" selected, clear the array
+            if (value === 'all') {
+                activeFilters.answerTypes = [];
+            } else {
+                // Add to array if not already present
+                if (!activeFilters.answerTypes.includes(value)) {
+                    activeFilters.answerTypes.push(value);
+                }
+            }
+
+            // Reset dropdown to "All Types" so user can select more
+            select.value = 'all';
+
+            updateSelectedTypesDisplay();
+            updateFilterDisplay();
+        }
+
+        function updateSelectedTypesDisplay() {
+            const container = document.getElementById('selectedQuestionTypes');
+            if (activeFilters.answerTypes.length === 0) {
+                container.style.display = 'none';
+                container.innerHTML = '';
+            } else {
+                container.style.display = 'flex';
+                container.innerHTML = activeFilters.answerTypes.map(type =>
+                    `<span class="selected-type-tag">${type}<span class="remove-type" onclick="removeQuestionType('${type.replace(/'/g, "\\'")}')">×</span></span>`
+                ).join('');
+            }
+        }
+
+        function removeQuestionType(type) {
+            activeFilters.answerTypes = activeFilters.answerTypes.filter(t => t !== type);
+            updateSelectedTypesDisplay();
             updateFilterDisplay();
         }
 
@@ -3437,9 +3505,9 @@
                     }
                 }
 
-                // Check answer type filter
-                if (activeFilters.answerType !== 'all') {
-                    if (meta.answer_type !== activeFilters.answerType) return false;
+                // Check answer type filter (multi-select)
+                if (activeFilters.answerTypes.length > 0) {
+                    if (!activeFilters.answerTypes.includes(meta.answer_type)) return false;
                 }
 
                 return true;
@@ -3464,11 +3532,10 @@
             if (activeFilters.secondary !== 'all') {
                 tags.push({ label: activeFilters.secondary, type: 'secondary' });
             }
-            if (activeFilters.answerType !== 'all') {
-                tags.push({ label: activeFilters.answerType, type: 'answerType' });
-            }
+            // Note: Question types are displayed separately above the dropdown
 
-            // Show/hide active filters section
+            // Show/hide active filters section (check both tags and question types)
+            const hasFilters = tags.length > 0 || activeFilters.answerTypes.length > 0;
             activeFiltersDiv.style.display = tags.length > 0 ? 'block' : 'none';
 
             // Render tags
@@ -3481,7 +3548,7 @@
             const filtered = getFilteredQuestions(category);
             const total = questions[category] ? questions[category].length : 0;
 
-            if (tags.length > 0) {
+            if (hasFilters) {
                 matchingCount.style.display = 'block';
                 matchingCount.className = 'matching-count';
 
@@ -3514,10 +3581,6 @@
                     activeFilters.secondary = 'all';
                     document.getElementById('secondaryFilter').value = 'all';
                     break;
-                case 'answerType':
-                    activeFilters.answerType = 'all';
-                    document.getElementById('answerTypeFilter').value = 'all';
-                    break;
             }
             updateFilterDisplay();
         }
@@ -3527,12 +3590,15 @@
             activeFilters.region = 'all';
             activeFilters.timePeriod = 'all';
             activeFilters.secondary = 'all';
-            activeFilters.answerType = 'all';
+            activeFilters.answerTypes = [];
 
             document.getElementById('regionFilter').value = 'all';
             document.getElementById('timeFilter').value = 'all';
             document.getElementById('secondaryFilter').value = 'all';
             document.getElementById('answerTypeFilter').value = 'all';
+
+            // Clear selected question types display
+            updateSelectedTypesDisplay();
 
             updateFilterDisplay();
         }
