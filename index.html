@@ -1747,19 +1747,14 @@
         }
 
         .dashboard-header {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         .dashboard-title {
             font-size: 2em;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 10px;
-        }
-
-        .dashboard-subtitle {
-            font-size: 1em;
-            color: var(--text-secondary);
+            margin-bottom: 0;
         }
 
         .dashboard-grid {
@@ -1947,12 +1942,12 @@
         .category-stat-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 0.85em;
+            gap: 6px;
+            font-size: 0.8em;
         }
 
         .category-stat-label {
-            min-width: 105px;
+            min-width: 90px;
             color: var(--text-primary);
             font-weight: 500;
             white-space: nowrap;
@@ -1962,31 +1957,175 @@
 
         .category-stat-bar-container {
             flex: 1;
-            height: 28px;
+            height: 14px;
             background: var(--bg-tertiary);
-            border-radius: 8px;
+            border-radius: 4px;
             overflow: hidden;
         }
 
         .category-stat-bar {
             height: 100%;
             background: var(--primary-blue);
-            border-radius: 8px;
+            border-radius: 4px;
             transition: width 0.3s ease;
         }
 
         .category-stat-value {
-            min-width: 35px;
+            min-width: 32px;
             text-align: right;
             color: var(--text-primary);
             font-weight: 600;
         }
 
         .category-stat-count {
-            min-width: 25px;
+            min-width: 22px;
             text-align: right;
             color: var(--text-tertiary);
+            font-size: 0.85em;
+        }
+
+        /* Performance Trends */
+        .trends-section {
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .trends-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .trends-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .time-period-selector {
+            display: flex;
+            gap: 5px;
+        }
+
+        .time-period-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-size: 0.8em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .time-period-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary-blue);
+        }
+
+        .time-period-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .trends-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .trend-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .trend-card-header {
             font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .trend-chart-container {
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
+
+        .trend-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .trend-chart-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
+        .trend-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .trend-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75em;
+            color: var(--text-secondary);
+        }
+
+        .trend-legend-color {
+            width: 12px;
+            height: 3px;
+            border-radius: 1px;
+        }
+
+        /* SVG Chart Styles */
+        .trend-line {
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .trend-dot {
+            stroke-width: 2;
+            stroke: var(--panel-bg);
+        }
+
+        .trend-grid-line {
+            stroke: var(--border-color);
+            stroke-width: 1;
+            stroke-dasharray: 4, 4;
+        }
+
+        .trend-axis-label {
+            font-size: 10px;
+            fill: var(--text-tertiary);
+        }
+
+        .trend-x-label {
+            text-anchor: middle;
+        }
+
+        .trend-y-label {
+            text-anchor: end;
         }
 
         /* History Table */
@@ -2486,7 +2625,6 @@
     <div id="dashboardContainer" class="dashboard-container">
         <div class="dashboard-header">
             <h1 class="dashboard-title">Dashboard</h1>
-            <p class="dashboard-subtitle">Track your progress and performance</p>
         </div>
 
         <!-- Overall Statistics -->
@@ -2532,6 +2670,48 @@
                     <div class="difficulty-charts" id="difficultyCharts">
                         <!-- Difficulty charts will be generated by JS -->
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Trends Section -->
+        <div class="trends-section">
+            <div class="trends-header">
+                <div class="trends-title">Performance Trends</div>
+                <div class="time-period-selector">
+                    <button class="time-period-btn" data-period="today">Today</button>
+                    <button class="time-period-btn" data-period="week">This Week</button>
+                    <button class="time-period-btn active" data-period="month">This Month</button>
+                    <button class="time-period-btn" data-period="year">This Year</button>
+                    <button class="time-period-btn" data-period="all">All Time</button>
+                </div>
+            </div>
+
+            <div class="trends-grid">
+                <!-- Overall Accuracy Trend -->
+                <div class="trend-card">
+                    <div class="trend-card-header">Overall Accuracy Over Time</div>
+                    <div class="trend-chart-container" id="overallTrendChart">
+                        <!-- Chart will be generated by JS -->
+                    </div>
+                </div>
+
+                <!-- Accuracy by Answer Type Trend -->
+                <div class="trend-card">
+                    <div class="trend-card-header">Accuracy by Answer Type</div>
+                    <div class="trend-chart-container" id="answerTypeTrendChart">
+                        <!-- Chart will be generated by JS -->
+                    </div>
+                    <div class="trend-legend" id="answerTypeTrendLegend"></div>
+                </div>
+
+                <!-- Accuracy by Difficulty Trend -->
+                <div class="trend-card">
+                    <div class="trend-card-header">Accuracy by Difficulty</div>
+                    <div class="trend-chart-container" id="difficultyTrendChart">
+                        <!-- Chart will be generated by JS -->
+                    </div>
+                    <div class="trend-legend" id="difficultyTrendLegend"></div>
                 </div>
             </div>
         </div>
@@ -4391,7 +4571,6 @@
                     dashboardContainer.innerHTML = `
                         <div class="dashboard-header">
                             <h1 class="dashboard-title">Dashboard</h1>
-                            <p class="dashboard-subtitle">Track your progress and performance</p>
                         </div>
                         <div class="dashboard-card">
                             <div class="card-body">
@@ -4650,6 +4829,378 @@
             answerTypeStatsDiv.innerHTML = answerTypeHTML;
         }
 
+        // ============================================
+        // PERFORMANCE TRENDS
+        // ============================================
+
+        let selectedTrendPeriod = 'month'; // Default to This Month
+
+        const DIFFICULTY_COLORS = {
+            'P': '#3498db', // Preliminary - blue
+            'Q': '#27ae60', // Quarterfinals - green
+            'S': '#f39c12', // Semifinals - orange
+            'F': '#e74c3c'  // Finals - red
+        };
+
+        const DIFFICULTY_NAMES = {
+            'P': 'Preliminary',
+            'Q': 'Quarterfinals',
+            'S': 'Semifinals',
+            'F': 'Finals'
+        };
+
+        const ANSWER_TYPE_COLORS = {
+            'People & Biography': '#3498db',
+            'Events (Wars, Battles, Revolutions)': '#ff69b4',
+            'Political History & Diplomacy': '#9b59b6',
+            'Economic History & Trade': '#27ae60',
+            'Social History & Daily Life': '#f39c12',
+            'Cultural History (Art, Literature, Music)': '#1abc9c',
+            'Religion & Mythology': '#e67e22',
+            'Science, Technology & Innovation': '#2980b9',
+            'Geography & Environment': '#16a085',
+            'Places, Cities & Civilizations': '#8e44ad',
+            'Groups, Organizations & Institutions': '#c0392b',
+            'Documents, Laws & Treaties': '#d35400',
+            'Ideas, Ideologies & Philosophies': '#7f8c8d'
+        };
+
+        const ANSWER_TYPE_SHORT_NAMES = {
+            'People & Biography': 'People',
+            'Events (Wars, Battles, Revolutions)': 'Events',
+            'Political History & Diplomacy': 'Political',
+            'Economic History & Trade': 'Economic',
+            'Social History & Daily Life': 'Social',
+            'Cultural History (Art, Literature, Music)': 'Cultural',
+            'Religion & Mythology': 'Religion',
+            'Science, Technology & Innovation': 'Science',
+            'Geography & Environment': 'Geography',
+            'Places, Cities & Civilizations': 'Places',
+            'Groups, Organizations & Institutions': 'Groups',
+            'Documents, Laws & Treaties': 'Documents',
+            'Ideas, Ideologies & Philosophies': 'Ideas'
+        };
+
+        function filterHistoryByTimePeriod(period) {
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            let startDate;
+            switch (period) {
+                case 'today':
+                    startDate = startOfToday;
+                    break;
+                case 'week':
+                    startDate = new Date(startOfToday);
+                    startDate.setDate(startDate.getDate() - 7);
+                    break;
+                case 'month':
+                    startDate = new Date(startOfToday);
+                    startDate.setDate(startDate.getDate() - 30);
+                    break;
+                case 'year':
+                    startDate = new Date(startOfToday);
+                    startDate.setFullYear(startDate.getFullYear() - 1);
+                    break;
+                case 'all':
+                default:
+                    startDate = new Date(0); // Beginning of time
+                    break;
+            }
+
+            return questionHistory.filter(entry => entry.timestamp >= startDate.getTime());
+        }
+
+        function calculateTrendStats(period) {
+            const filteredHistory = filterHistoryByTimePeriod(period);
+
+            if (filteredHistory.length === 0) {
+                return { dates: [], overall: [], byDifficulty: {}, byAnswerType: {} };
+            }
+
+            // Group by date
+            const byDate = {};
+
+            filteredHistory.forEach(entry => {
+                const date = new Date(entry.timestamp);
+                let dateKey;
+
+                // Use appropriate grouping based on period
+                if (period === 'year' || period === 'all') {
+                    // Group by week for year/all time
+                    const weekStart = new Date(date);
+                    weekStart.setDate(date.getDate() - date.getDay());
+                    dateKey = weekStart.toISOString().split('T')[0];
+                } else {
+                    // Group by day for shorter periods
+                    dateKey = date.toISOString().split('T')[0];
+                }
+
+                if (!byDate[dateKey]) {
+                    byDate[dateKey] = {
+                        overall: { total: 0, correct: 0 },
+                        byDifficulty: {},
+                        byAnswerType: {}
+                    };
+                }
+
+                const dayData = byDate[dateKey];
+                const isCorrect = entry.status === 'correct';
+                const difficulty = entry.id.charAt(0);
+                const meta = questionMetadata[entry.id];
+                const answerType = meta ? meta.answer_type : null;
+
+                // Overall stats
+                dayData.overall.total++;
+                if (isCorrect) dayData.overall.correct++;
+
+                // By difficulty
+                if (!dayData.byDifficulty[difficulty]) {
+                    dayData.byDifficulty[difficulty] = { total: 0, correct: 0 };
+                }
+                dayData.byDifficulty[difficulty].total++;
+                if (isCorrect) dayData.byDifficulty[difficulty].correct++;
+
+                // By answer type
+                if (answerType) {
+                    if (!dayData.byAnswerType[answerType]) {
+                        dayData.byAnswerType[answerType] = { total: 0, correct: 0 };
+                    }
+                    dayData.byAnswerType[answerType].total++;
+                    if (isCorrect) dayData.byAnswerType[answerType].correct++;
+                }
+            });
+
+            // Sort dates and calculate percentages
+            const sortedDates = Object.keys(byDate).sort();
+
+            const result = {
+                dates: sortedDates,
+                overall: [],
+                byDifficulty: { P: [], Q: [], S: [], F: [] },
+                byAnswerType: {}
+            };
+
+            // Initialize answer type arrays
+            Object.keys(ANSWER_TYPE_COLORS).forEach(type => {
+                result.byAnswerType[type] = [];
+            });
+
+            sortedDates.forEach(date => {
+                const dayData = byDate[date];
+
+                // Overall accuracy
+                const overallPct = dayData.overall.total > 0
+                    ? Math.round((dayData.overall.correct / dayData.overall.total) * 100)
+                    : null;
+                result.overall.push(overallPct);
+
+                // Difficulty accuracy
+                ['P', 'Q', 'S', 'F'].forEach(diff => {
+                    const diffData = dayData.byDifficulty[diff];
+                    const pct = diffData && diffData.total > 0
+                        ? Math.round((diffData.correct / diffData.total) * 100)
+                        : null;
+                    result.byDifficulty[diff].push(pct);
+                });
+
+                // Answer type accuracy
+                Object.keys(ANSWER_TYPE_COLORS).forEach(type => {
+                    const typeData = dayData.byAnswerType[type];
+                    const pct = typeData && typeData.total > 0
+                        ? Math.round((typeData.correct / typeData.total) * 100)
+                        : null;
+                    result.byAnswerType[type].push(pct);
+                });
+            });
+
+            return result;
+        }
+
+        function createTrendChart(container, data, options = {}) {
+            const { dates, series, colors, showLegend = false, legendContainer = null } = options;
+
+            container.innerHTML = '';
+
+            if (!dates || dates.length === 0) {
+                container.innerHTML = '<div class="trend-chart-empty">No data available for this period</div>';
+                return;
+            }
+
+            const width = container.clientWidth || 600;
+            const height = container.clientHeight || 200;
+            const padding = { top: 20, right: 20, bottom: 30, left: 40 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+
+            // Create SVG
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'trend-chart');
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+            // Draw grid lines
+            for (let i = 0; i <= 4; i++) {
+                const y = padding.top + (chartHeight * (4 - i) / 4);
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', padding.left);
+                line.setAttribute('y1', y);
+                line.setAttribute('x2', width - padding.right);
+                line.setAttribute('y2', y);
+                line.setAttribute('class', 'trend-grid-line');
+                svg.appendChild(line);
+
+                // Y-axis labels
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', padding.left - 5);
+                label.setAttribute('y', y + 3);
+                label.setAttribute('class', 'trend-axis-label trend-y-label');
+                label.textContent = `${i * 25}%`;
+                svg.appendChild(label);
+            }
+
+            // X-axis labels (show subset of dates)
+            const maxLabels = Math.min(dates.length, 7);
+            const labelInterval = Math.ceil(dates.length / maxLabels);
+            dates.forEach((date, i) => {
+                if (i % labelInterval === 0 || i === dates.length - 1) {
+                    const x = padding.left + (chartWidth * i / (dates.length - 1 || 1));
+                    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    label.setAttribute('x', x);
+                    label.setAttribute('y', height - 5);
+                    label.setAttribute('class', 'trend-axis-label trend-x-label');
+                    // Format date as MM/DD
+                    const d = new Date(date);
+                    label.textContent = `${d.getMonth() + 1}/${d.getDate()}`;
+                    svg.appendChild(label);
+                }
+            });
+
+            // Draw lines for each series
+            Object.entries(series).forEach(([name, values]) => {
+                if (!values || values.every(v => v === null)) return;
+
+                const color = colors[name] || '#3498db';
+                const points = [];
+
+                values.forEach((val, i) => {
+                    if (val !== null) {
+                        const x = padding.left + (chartWidth * i / (dates.length - 1 || 1));
+                        const y = padding.top + chartHeight - (chartHeight * val / 100);
+                        points.push({ x, y, val });
+                    }
+                });
+
+                if (points.length > 1) {
+                    // Draw line
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const d = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+                    path.setAttribute('d', d);
+                    path.setAttribute('class', 'trend-line');
+                    path.setAttribute('stroke', color);
+                    svg.appendChild(path);
+                }
+
+                // Draw dots
+                points.forEach(p => {
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', p.x);
+                    circle.setAttribute('cy', p.y);
+                    circle.setAttribute('r', 3);
+                    circle.setAttribute('class', 'trend-dot');
+                    circle.setAttribute('fill', color);
+                    svg.appendChild(circle);
+                });
+            });
+
+            container.appendChild(svg);
+
+            // Create legend if needed
+            if (showLegend && legendContainer) {
+                legendContainer.innerHTML = '';
+                Object.entries(series).forEach(([name, values]) => {
+                    // Only show in legend if there's data
+                    if (!values || values.every(v => v === null)) return;
+
+                    const color = colors[name] || '#3498db';
+                    const displayName = ANSWER_TYPE_SHORT_NAMES[name] || DIFFICULTY_NAMES[name] || name;
+
+                    const item = document.createElement('div');
+                    item.className = 'trend-legend-item';
+                    item.innerHTML = `
+                        <div class="trend-legend-color" style="background: ${color}"></div>
+                        <span>${displayName}</span>
+                    `;
+                    legendContainer.appendChild(item);
+                });
+            }
+        }
+
+        function renderTrendCharts() {
+            const stats = calculateTrendStats(selectedTrendPeriod);
+
+            // Overall accuracy chart
+            const overallContainer = document.getElementById('overallTrendChart');
+            if (overallContainer) {
+                createTrendChart(overallContainer, null, {
+                    dates: stats.dates,
+                    series: { 'Overall': stats.overall },
+                    colors: { 'Overall': '#3498db' }
+                });
+            }
+
+            // Difficulty trend chart
+            const difficultyContainer = document.getElementById('difficultyTrendChart');
+            const difficultyLegend = document.getElementById('difficultyTrendLegend');
+            if (difficultyContainer) {
+                createTrendChart(difficultyContainer, null, {
+                    dates: stats.dates,
+                    series: stats.byDifficulty,
+                    colors: DIFFICULTY_COLORS,
+                    showLegend: true,
+                    legendContainer: difficultyLegend
+                });
+            }
+
+            // Answer type trend chart
+            const answerTypeContainer = document.getElementById('answerTypeTrendChart');
+            const answerTypeLegend = document.getElementById('answerTypeTrendLegend');
+            if (answerTypeContainer) {
+                createTrendChart(answerTypeContainer, null, {
+                    dates: stats.dates,
+                    series: stats.byAnswerType,
+                    colors: ANSWER_TYPE_COLORS,
+                    showLegend: true,
+                    legendContainer: answerTypeLegend
+                });
+            }
+        }
+
+        function onTrendPeriodChange(event) {
+            const btn = event.target;
+            if (!btn.classList.contains('time-period-btn')) return;
+
+            // Update active state
+            document.querySelectorAll('.time-period-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update selected period and re-render
+            selectedTrendPeriod = btn.dataset.period;
+            renderTrendCharts();
+        }
+
+        // Add event listener for time period selector
+        document.addEventListener('DOMContentLoaded', () => {
+            const selector = document.querySelector('.time-period-selector');
+            if (selector) {
+                selector.addEventListener('click', onTrendPeriodChange);
+            }
+        });
+
+        // ============================================
+        // END PERFORMANCE TRENDS
+        // ============================================
+
         function refreshDashboard() {
             const dashboardContainer = document.getElementById('dashboardContainer');
 
@@ -4709,6 +5260,9 @@
                 chartItem.appendChild(count);
                 difficultyCharts.appendChild(chartItem);
             });
+
+            // Render performance trend charts
+            renderTrendCharts();
         }
 
         function restoreDashboardStructure() {
@@ -4716,7 +5270,6 @@
             dashboardContainer.innerHTML = `
                 <div class="dashboard-header">
                     <h1 class="dashboard-title">Dashboard</h1>
-                    <p class="dashboard-subtitle">Track your progress and performance</p>
                 </div>
 
                 <!-- Overall Statistics -->
@@ -4765,7 +5318,55 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Performance Trends Section -->
+                <div class="trends-section">
+                    <div class="trends-header">
+                        <div class="trends-title">Performance Trends</div>
+                        <div class="time-period-selector">
+                            <button class="time-period-btn" data-period="today">Today</button>
+                            <button class="time-period-btn" data-period="week">This Week</button>
+                            <button class="time-period-btn active" data-period="month">This Month</button>
+                            <button class="time-period-btn" data-period="year">This Year</button>
+                            <button class="time-period-btn" data-period="all">All Time</button>
+                        </div>
+                    </div>
+
+                    <div class="trends-grid">
+                        <!-- Overall Accuracy Trend -->
+                        <div class="trend-card">
+                            <div class="trend-card-header">Overall Accuracy Over Time</div>
+                            <div class="trend-chart-container" id="overallTrendChart">
+                                <!-- Chart will be generated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Accuracy by Answer Type Trend -->
+                        <div class="trend-card">
+                            <div class="trend-card-header">Accuracy by Answer Type</div>
+                            <div class="trend-chart-container" id="answerTypeTrendChart">
+                                <!-- Chart will be generated by JS -->
+                            </div>
+                            <div class="trend-legend" id="answerTypeTrendLegend"></div>
+                        </div>
+
+                        <!-- Accuracy by Difficulty Trend -->
+                        <div class="trend-card">
+                            <div class="trend-card-header">Accuracy by Difficulty</div>
+                            <div class="trend-chart-container" id="difficultyTrendChart">
+                                <!-- Chart will be generated by JS -->
+                            </div>
+                            <div class="trend-legend" id="difficultyTrendLegend"></div>
+                        </div>
+                    </div>
+                </div>
             `;
+
+            // Re-attach event listener for time period selector
+            const selector = document.querySelector('.time-period-selector');
+            if (selector) {
+                selector.addEventListener('click', onTrendPeriodChange);
+            }
         }
 
         function restoreHistoryStructure() {
