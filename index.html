@@ -5513,7 +5513,7 @@
 
                 tableHTML += `
                     <tr class="${entry.status}" onclick="openQuestionDetail('${entry.id}')">
-                        <td><strong>${entry.id}</strong></td>
+                        <td>${entry.id}</td>
                         <td>
                             <span class="status-badge ${entry.status}">
                                 ${statusIcon}<span class="status-text"> ${entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}</span>
