@@ -118,14 +118,16 @@ export function updateBuzzerVisibility() {
 
 export function toggleSettings() {
     const settingsPanel = document.getElementById('settingsPanel');
-    const toggleBtn = document.getElementById('settingsToggle');
+    const toggleBtn = document.getElementById('settingsButton');
+
+    if (!settingsPanel) return;
 
     if (settingsPanel.classList.contains('collapsed')) {
         settingsPanel.classList.remove('collapsed');
-        toggleBtn.textContent = 'Hide Settings';
+        if (toggleBtn) toggleBtn.textContent = 'Hide Settings';
     } else {
         settingsPanel.classList.add('collapsed');
-        toggleBtn.textContent = 'Show Settings';
+        if (toggleBtn) toggleBtn.textContent = 'Show Settings';
     }
 }
 

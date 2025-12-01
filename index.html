@@ -11,7 +11,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, deleteUser } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, getDocs, deleteDoc, updateDoc, increment, serverTimestamp, writeBatch, where, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         const firebaseConfig = {
@@ -27,7 +27,7 @@
         const app = initializeApp(firebaseConfig);
         window.firebaseAuth = getAuth(app);
         window.firebaseDb = getFirestore(app);
-        window.firebaseAuthFunctions = { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup };
+        window.firebaseAuthFunctions = { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, deleteUser };
         window.firebaseDbFunctions = { doc, setDoc, getDoc, collection, query, orderBy, getDocs, deleteDoc, updateDoc, increment, serverTimestamp, writeBatch, where, limit };
     </script>
 
@@ -147,7 +147,7 @@
         </div>
 
         <!-- Settings Panel (Right Side) -->
-        <div class="settings-panel">
+        <div class="settings-panel" id="settingsPanel">
             <div class="settings-title">Settings</div>
 
             <!-- Question Set -->
@@ -545,6 +545,13 @@
                         <!-- Save Button -->
                         <div class="profile-section">
                             <button class="btn-primary" onclick="saveProfile()" style="width: 100%; padding: 15px;">Save Profile</button>
+                        </div>
+
+                        <!-- Danger Zone -->
+                        <div class="profile-section" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                            <label class="profile-label" style="color: var(--error-red);">Danger Zone</label>
+                            <p class="profile-hint" style="margin-bottom: 15px;">Permanently delete your account and all associated data. This action cannot be undone.</p>
+                            <button class="btn-danger" onclick="deleteAccount()" style="width: 100%; padding: 15px;">Delete Account</button>
                         </div>
 
                     </div>
