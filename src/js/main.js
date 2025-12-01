@@ -126,6 +126,9 @@ window.closeLevelUpNotification = xpSystem.closeLevelUpNotification;
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', async () => {
+    // Set device type attribute for CSS targeting
+    document.body.setAttribute('data-device', settings.detectDeviceType());
+
     // Initialize theme
     settings.initTheme();
 
