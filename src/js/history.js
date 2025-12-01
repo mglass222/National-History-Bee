@@ -162,9 +162,36 @@ export function updateTooltipPosition(event) {
 }
 
 export function getFilteredHistory() {
-    const filter = document.getElementById('historyFilter')?.value || 'all';
-    if (filter === 'all') return state.questionHistory;
-    return state.questionHistory.filter(h => h.status === filter);
+    const statusFilter = document.getElementById('historyFilter')?.value || 'all';
+    const regionFilter = document.getElementById('historyRegionFilter')?.value || 'all';
+    const timePeriodFilter = document.getElementById('historyTimePeriodFilter')?.value || 'all';
+    const typeFilter = document.getElementById('historyTypeFilter')?.value || 'all';
+
+    return state.questionHistory.filter(entry => {
+        // Status filter
+        if (statusFilter !== 'all' && entry.status !== statusFilter) return false;
+
+        // Get metadata for category filters
+        const meta = state.questionMetadata[entry.id];
+        if (!meta) return statusFilter === 'all' || entry.status === statusFilter;
+
+        // Region filter
+        if (regionFilter !== 'all') {
+            if (!meta.regions || !meta.regions.includes(regionFilter)) return false;
+        }
+
+        // Time period filter
+        if (timePeriodFilter !== 'all') {
+            if (!meta.time_periods || !meta.time_periods.includes(timePeriodFilter)) return false;
+        }
+
+        // Type filter
+        if (typeFilter !== 'all') {
+            if (meta.answer_type !== typeFilter) return false;
+        }
+
+        return true;
+    });
 }
 
 export function filterHistory() {
@@ -187,39 +214,95 @@ export function renderHistoryTable(data) {
     const reversed = [...data].reverse();
 
     wrapper.innerHTML = `
-        <table class="history-table">
+        <table class="history-table" id="sessionHistoryTable">
             <thead>
                 <tr>
-                    <th style="width: 55px;">ID</th>
-                    <th style="width: 70px;">Status</th>
-                    <th>Question</th>
-                    <th style="width: 80px;">Region</th>
-                    <th style="width: 130px;">Time</th>
+                    <th style="min-width: 30px; width: 70px;">ID<div class="resizer"></div></th>
+                    <th style="min-width: 25px; width: 85px;">Status<div class="resizer"></div></th>
+                    <th style="min-width: 30px; width: 500px;">Question<div class="resizer"></div></th>
+                    <th style="min-width: 30px; width: 100px;">Region<div class="resizer"></div></th>
+                    <th style="min-width: 30px; width: 120px;">Time Period<div class="resizer"></div></th>
+                    <th style="min-width: 30px; width: 80px;">Type<div class="resizer"></div></th>
+                    <th style="min-width: 50px; width: 140px;">Attempted</th>
                 </tr>
             </thead>
             <tbody>
                 ${reversed.map(entry => {
                     const meta = state.questionMetadata[entry.id] || {};
                     const region = meta.regions ? meta.regions[0] : '-';
+                    const timePeriod = meta.time_periods ? meta.time_periods[0] : '-';
+                    const answerType = meta.answer_type || '-';
                     const date = new Date(entry.timestamp);
-                    const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
                     let statusClass = entry.status;
                     let statusIcon = entry.status === 'correct' ? '✓' : entry.status === 'incorrect' ? '✗' : '—';
 
                     return `
                         <tr onclick="openQuestionDetail('${entry.id}')" style="cursor: pointer;">
-                            <td>${entry.id}</td>
-                            <td><span class="status-badge ${statusClass}">${statusIcon} <span class="status-text">${entry.status}</span></span></td>
-                            <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${entry.question.replace(/<[^>]*>/g, '').substring(0, 100)}...</td>
+                            <td style="white-space: nowrap;">${entry.id}</td>
+                            <td><span class="status-badge ${statusClass}">${statusIcon}</span></td>
+                            <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${entry.question.replace(/<[^>]*>/g, '').substring(0, 100)}...</td>
                             <td>${region}</td>
-                            <td>${timeStr}</td>
+                            <td>${timePeriod}</td>
+                            <td>${answerType}</td>
+                            <td>${dateStr}</td>
                         </tr>
                     `;
                 }).join('')}
             </tbody>
         </table>
     `;
+
+    // Initialize column resizing
+    initSessionHistoryResizing();
+}
+
+// Column resizing for session history table
+function initSessionHistoryResizing() {
+    const table = document.getElementById('sessionHistoryTable');
+    if (!table) return;
+
+    const resizers = table.querySelectorAll('.resizer');
+    const allThs = table.querySelectorAll('thead th');
+    let currentTh = null;
+    let startX = 0;
+    let startWidth = 0;
+
+    resizers.forEach(resizer => {
+        resizer.addEventListener('mousedown', (e) => {
+            // Lock all column widths to their current rendered size
+            allThs.forEach(th => {
+                th.style.width = th.getBoundingClientRect().width + 'px';
+            });
+
+            currentTh = resizer.parentElement;
+            startX = e.pageX;
+            startWidth = currentTh.getBoundingClientRect().width;
+
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+
+            e.preventDefault();
+        });
+    });
+
+    function handleMouseMove(e) {
+        if (!currentTh) return;
+
+        const width = startWidth + (e.pageX - startX);
+        const minWidth = parseInt(currentTh.style.minWidth) || 30;
+
+        if (width >= minWidth) {
+            currentTh.style.width = width + 'px';
+        }
+    }
+
+    function handleMouseUp() {
+        currentTh = null;
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    }
 }
 
 export function exportHistory() {
@@ -289,16 +372,53 @@ export function restoreHistoryStructure() {
 
     container.innerHTML = `
         <div class="dashboard-header">
-            <h1>Question History</h1>
-            <div class="dashboard-controls">
-                <select id="historyFilter" onchange="filterHistory()">
-                    <option value="all">All</option>
+            <h1>History</h1>
+        </div>
+        <div class="history-filters">
+            <div class="history-filter-row">
+                <select id="historyFilter" class="history-filter-select" onchange="filterHistory()">
+                    <option value="all">Status</option>
                     <option value="correct">Correct</option>
                     <option value="incorrect">Incorrect</option>
                     <option value="skipped">Skipped</option>
                 </select>
-                <button onclick="exportHistory()">Export CSV</button>
-                <button onclick="clearHistory()" style="background: var(--error-red); color: white;">Clear History</button>
+                <select id="historyRegionFilter" class="history-filter-select" onchange="filterHistory()">
+                    <option value="all">All Regions</option>
+                    <option value="United States">United States</option>
+                    <option value="Europe">Europe</option>
+                    <option value="Asia">Asia</option>
+                    <option value="Latin America & Caribbean">Latin America & Caribbean</option>
+                    <option value="Americas (Pre-Columbian)">Americas (Pre-Columbian)</option>
+                    <option value="Africa">Africa</option>
+                    <option value="Middle East & North Africa">Middle East & North Africa</option>
+                    <option value="Global/Multi-Regional">Global/Multi-Regional</option>
+                </select>
+                <select id="historyTimePeriodFilter" class="history-filter-select" onchange="filterHistory()">
+                    <option value="all">All Time Periods</option>
+                    <option value="Ancient World (pre-500 CE)">Ancient World (pre-500 CE)</option>
+                    <option value="Medieval Era (500-1450)">Medieval Era (500-1450)</option>
+                    <option value="Early Modern (1450-1750)">Early Modern (1450-1750)</option>
+                    <option value="Age of Revolutions (1750-1850)">Age of Revolutions (1750-1850)</option>
+                    <option value="Industrial & Imperial Age (1850-1914)">Industrial & Imperial Age (1850-1914)</option>
+                    <option value="World Wars & Interwar (1914-1945)">World Wars & Interwar (1914-1945)</option>
+                    <option value="Contemporary Era (1945-present)">Contemporary Era (1945-present)</option>
+                </select>
+                <select id="historyTypeFilter" class="history-filter-select" onchange="filterHistory()">
+                    <option value="all">All Types</option>
+                    <option value="People & Biography">People & Biography</option>
+                    <option value="Events (Wars, Battles, Revolutions)">Events (Wars, Battles, Revolutions)</option>
+                    <option value="Political History & Diplomacy">Political History & Diplomacy</option>
+                    <option value="Economic History & Trade">Economic History & Trade</option>
+                    <option value="Social History & Daily Life">Social History & Daily Life</option>
+                    <option value="Cultural History (Art, Literature, Music)">Cultural History (Art, Literature, Music)</option>
+                    <option value="Religion & Mythology">Religion & Mythology</option>
+                    <option value="Science, Technology & Innovation">Science, Technology & Innovation</option>
+                    <option value="Geography & Environment">Geography & Environment</option>
+                    <option value="Places, Cities & Civilizations">Places, Cities & Civilizations</option>
+                    <option value="Groups, Organizations & Institutions">Groups, Organizations & Institutions</option>
+                    <option value="Documents, Laws & Treaties">Documents, Laws & Treaties</option>
+                    <option value="Ideas, Ideologies & Philosophies">Ideas, Ideologies & Philosophies</option>
+                </select>
             </div>
         </div>
         <div id="historyTableWrapper"></div>

@@ -1,14 +1,13 @@
 // Router module - navigation and route handling
 import { state } from './state.js';
 import { refreshDashboard, restoreDashboardStructure } from './dashboard.js';
-import { renderHistoryPageTable, restoreHistoryPageStructure } from './historyPage.js';
+import { renderHistoryTable, restoreHistoryStructure } from './history.js';
 import { loadLeaderboard } from './leaderboard.js';
 import { loadProfile, checkAndShowProfileWarning } from './profile.js';
 
 // Forward declarations for cross-module dependencies
 export const deps = {
-    loadUserHistory: null,
-    renderHistoryTable: null  // from history.js (session sidebar)
+    loadUserHistory: null
 };
 
 // Navigation
@@ -74,8 +73,7 @@ export async function handleRouteChange() {
         if (!state.currentUser || !state.currentUser.emailVerified) {
             historyContainer.innerHTML = `
                 <div class="dashboard-header">
-                    <h1 class="dashboard-title">Question History</h1>
-                    <p class="dashboard-subtitle">Review your practice history and track your progress</p>
+                    <h1 class="dashboard-title">History</h1>
                 </div>
                 <div class="dashboard-card">
                     <div class="card-body">
@@ -87,12 +85,12 @@ export async function handleRouteChange() {
             // Make sure history structure exists (in case it was replaced by login message)
             let historyTableWrapper = document.getElementById('historyTableWrapper');
             if (!historyTableWrapper) {
-                restoreHistoryPageStructure();
+                restoreHistoryStructure();
             }
             if (deps.loadUserHistory) {
                 await deps.loadUserHistory();
             }
-            renderHistoryPageTable(state.questionHistory);
+            renderHistoryTable(state.questionHistory);
         }
     } else if (hash === 'leaderboard') {
         practiceContainer.classList.remove('active');

@@ -2287,15 +2287,76 @@ button:hover {
     cursor: pointer;
 }
 
+.history-filters {
+    display: flex;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+}
+
+.history-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.history-filter-select {
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-size: 0.85em;
+    cursor: pointer;
+    width: 150px;
+}
+
+.history-filter-select:hover {
+    border-color: var(--primary-blue);
+}
+
+.history-filter-select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+}
+
+.history-filter-btn {
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-size: 0.85em;
+    cursor: pointer;
+}
+
+.history-filter-btn:hover {
+    border-color: var(--primary-blue);
+    background: var(--bg-secondary);
+}
+
+.history-filter-btn-danger {
+    background: var(--error-red);
+    color: white;
+    border-color: var(--error-red);
+}
+
+.history-filter-btn-danger:hover {
+    background: #c0392b;
+    border-color: #c0392b;
+}
+
 .history-table {
-    width: 100%;
     border-collapse: collapse;
     font-size: 0.95em;
+    table-layout: fixed;
 }
 
 .history-table th {
     text-align: left;
-    padding: 6px 10px;
+    padding: 6px 18px 6px 10px;
     border-bottom: 2px solid var(--border-color);
     font-size: 0.85em;
     font-weight: 600;
@@ -2304,6 +2365,10 @@ button:hover {
     letter-spacing: 0.5px;
     position: relative;
     user-select: none;
+}
+
+.history-table th:last-child {
+    padding-right: 10px;
 }
 
 .history-table th:first-child {
@@ -2315,36 +2380,28 @@ button:hover {
     right: 0;
     top: 0;
     height: 100%;
-    width: 8px;
+    width: 10px;
     cursor: col-resize;
     user-select: none;
-    border-right: 2px solid transparent;
-    transition: border-color 0.2s;
+    transition: background-color 0.2s;
 }
 
 .history-table th .resizer::after {
     content: '';
     position: absolute;
-    right: 2px;
+    right: 3px;
     top: 50%;
     transform: translateY(-50%);
-    width: 2px;
-    height: 50%;
-    background: var(--border-color);
-    opacity: 0.3;
-}
-
-.history-table th .resizer:hover {
-    border-right-color: var(--primary-blue);
+    width: 3px;
+    height: 60%;
+    background: var(--text-secondary);
+    opacity: 0.5;
+    border-radius: 2px;
 }
 
 .history-table th .resizer:hover::after {
     background: var(--primary-blue);
     opacity: 1;
-}
-
-.history-table th .resizer:active {
-    border-right-color: var(--primary-blue);
 }
 
 .history-table th .resizer:active::after {
@@ -2357,14 +2414,22 @@ button:hover {
     border-bottom: 1px solid var(--border-color);
     color: var(--text-primary);
     font-size: 0.9em;
-    word-wrap: break-word;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    vertical-align: top;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 0;
+}
+
+.history-table td:nth-child(3) {
+    font-size: 1em;
 }
 
 .history-table td:first-child {
     font-size: 0.9em;
+}
+
+.history-table td:nth-child(2) {
+    text-align: center;
 }
 
 .history-table tr {
@@ -2389,12 +2454,12 @@ button:hover {
 }
 
 .status-badge {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
     padding: 2px 8px;
     border-radius: 10px;
-    font-size: 0.8em;
+    font-size: 1.2em;
     font-weight: 600;
 }
 

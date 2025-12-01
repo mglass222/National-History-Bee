@@ -31,13 +31,13 @@ export function renderHistoryPageTable(data) {
         <table class="history-table" id="historyTable">
             <thead>
                 <tr>
-                    <th style="min-width: ${isMobile ? '50px' : '80px'};">${isMobile ? 'ID' : 'Question ID'}<div class="resizer"></div></th>
-                    <th style="min-width: ${isMobile ? '30px' : '100px'};">${isMobile ? '' : 'Status'}<div class="resizer"></div></th>
-                    <th style="min-width: ${isMobile ? '30px' : '100px'};">${isMobile ? 'Diff' : 'Difficulty'}<div class="resizer"></div></th>
-                    <th style="min-width: ${isMobile ? '50px' : '120px'};">${isMobile ? 'Reg' : 'Region'}<div class="resizer"></div></th>
-                    <th style="min-width: ${isMobile ? '50px' : '150px'};">${isMobile ? 'Time' : 'Time Period'}<div class="resizer"></div></th>
-                    <th style="min-width: ${isMobile ? '40px' : '100px'};">Type<div class="resizer"></div></th>
-                    <th style="min-width: ${isMobile ? '50px' : '80px'};">Date</th>
+                    <th style="min-width: ${isMobile ? '30px' : '30px'};">${isMobile ? 'ID' : 'Question ID'}<div class="resizer"></div></th>
+                    <th style="min-width: ${isMobile ? '25px' : '25px'};">${isMobile ? '' : 'Status'}<div class="resizer"></div></th>
+                    <th style="min-width: ${isMobile ? '25px' : '30px'};">${isMobile ? 'Diff' : 'Difficulty'}<div class="resizer"></div></th>
+                    <th style="min-width: ${isMobile ? '30px' : '30px'};">${isMobile ? 'Reg' : 'Region'}<div class="resizer"></div></th>
+                    <th style="min-width: ${isMobile ? '30px' : '30px'};">${isMobile ? 'Time' : 'Time Period'}<div class="resizer"></div></th>
+                    <th style="min-width: ${isMobile ? '25px' : '30px'};">Type<div class="resizer"></div></th>
+                    <th style="min-width: ${isMobile ? '30px' : '30px'};">Date</th>
                 </tr>
             </thead>
             <tbody>
@@ -61,11 +61,9 @@ export function renderHistoryPageTable(data) {
 
         tableHTML += `
             <tr class="${entry.status}" onclick="openQuestionDetail('${entry.id}')">
-                <td>${entry.id}</td>
+                <td style="white-space: nowrap;">${entry.id}</td>
                 <td>
-                    <span class="status-badge ${entry.status}">
-                        ${statusIcon}<span class="status-text"> ${entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}</span>
-                    </span>
+                    <span class="status-badge ${entry.status}">${statusIcon}</span>
                 </td>
                 <td>${difficulty}</td>
                 <td>${abbreviate(region, 7)}</td>
@@ -89,22 +87,25 @@ export function initColumnResizing() {
     if (!table) return;
 
     const resizers = table.querySelectorAll('.resizer');
-    let currentResizer = null;
+    const allThs = table.querySelectorAll('thead th');
     let currentTh = null;
     let startX = 0;
     let startWidth = 0;
 
     resizers.forEach(resizer => {
         resizer.addEventListener('mousedown', (e) => {
-            currentResizer = resizer;
+            // Lock all column widths to their current rendered size
+            allThs.forEach(th => {
+                th.style.width = th.getBoundingClientRect().width + 'px';
+            });
+
             currentTh = resizer.parentElement;
             startX = e.pageX;
-            startWidth = currentTh.offsetWidth;
+            startWidth = currentTh.getBoundingClientRect().width;
 
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
 
-            // Prevent text selection while resizing
             e.preventDefault();
         });
     });
@@ -113,25 +114,14 @@ export function initColumnResizing() {
         if (!currentTh) return;
 
         const width = startWidth + (e.pageX - startX);
-        const minWidth = parseInt(currentTh.style.minWidth) || 50;
+        const minWidth = parseInt(currentTh.style.minWidth) || 30;
 
         if (width >= minWidth) {
             currentTh.style.width = width + 'px';
-
-            // Also set width on corresponding cells in the column
-            const columnIndex = Array.from(currentTh.parentElement.children).indexOf(currentTh);
-            const rows = table.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const cell = row.children[columnIndex];
-                if (cell) {
-                    cell.style.width = width + 'px';
-                }
-            });
         }
     }
 
     function handleMouseUp() {
-        currentResizer = null;
         currentTh = null;
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
