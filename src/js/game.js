@@ -10,6 +10,17 @@ export const deps = {
     updatePointsAndLeaderboard: null
 };
 
+// Track buzz position for displaying marker after answer reveal
+let buzzCharIndex = null;
+
+function getQuestionWithBuzzMarker() {
+    if (buzzCharIndex === null || !state.currentQuestion) {
+        return state.currentQuestion.question;
+    }
+    const question = state.currentQuestion.question;
+    return question.slice(0, buzzCharIndex) + '<span class="buzz-marker">(#)</span>' + question.slice(buzzCharIndex);
+}
+
 export function removeCursor(element) {
     const html = element.innerHTML;
     element.innerHTML = html.replace(/<span class="cursor"><\/span>/g, '');
@@ -116,6 +127,7 @@ export function displayQuestion() {
     state.isPaused = false;
     state.answerInputShown = false;
     state.currentCharIndex = 0;
+    buzzCharIndex = null;
 
     updateBuzzerVisibility();
 
@@ -141,7 +153,10 @@ export function showAnswerInput() {
     removeCursor(questionText);
 
     if (state.currentQuestion && state.currentCharIndex < state.currentQuestion.question.length) {
+        buzzCharIndex = state.currentCharIndex;
         questionText.innerHTML += '<span class="buzz-marker">(#)</span>';
+    } else {
+        buzzCharIndex = null;
     }
 
     updateBuzzerVisibility();
@@ -302,7 +317,7 @@ export function checkAnswer() {
     clearInterval(state.streamingInterval);
     const questionText = document.getElementById('questionText');
     removeCursor(questionText);
-    questionText.innerHTML = state.currentQuestion.question;
+    questionText.innerHTML = getQuestionWithBuzzMarker();
 
     document.getElementById('pauseButton').classList.add('hidden');
 
@@ -406,7 +421,7 @@ export function revealAnswer() {
 
     const questionText = document.getElementById('questionText');
     removeCursor(questionText);
-    questionText.innerHTML = state.currentQuestion.question;
+    questionText.innerHTML = getQuestionWithBuzzMarker();
 
     showAnswer();
 }
